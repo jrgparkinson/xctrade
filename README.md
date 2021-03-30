@@ -2,5 +2,6 @@
 
 
 ```
-npm build && node server.js
+npm run build
+python manage.py runserver
 ```

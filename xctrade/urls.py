@@ -26,4 +26,5 @@ urlpatterns = [
     re_path(r'^api/offers/$', views.offers_list),
     # re_path(r'^api/offers/([0-9])$', views.offers_detail),
     re_path(".*", TemplateView.as_view(template_name='index.html')),
+re_path("googleafce55136e9c6cd8.html", TemplateView.as_view(template_name='googleafce55136e9c6cd8.html')),
 ]

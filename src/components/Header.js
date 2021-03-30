@@ -15,6 +15,7 @@ class Header extends Component {
           <i>presents</i>
         </h5>
         <h1>App with React + Django</h1>
+        <a href="">Oauth</a>
       </div>
     );
   }

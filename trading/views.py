@@ -1,17 +1,22 @@
 from rest_framework.response import Response
-from rest_framework.decorators import api_view, permission_classes
+from rest_framework.decorators import api_view, permission_classes, authentication_classes
 from rest_framework import status
 
-from .models import Athlete, Offer
+from .models import Athlete, Order
 from .serializers import *
 
 from django.conf import settings
 from rest_framework import serializers
 from rest_framework.authtoken.models import Token
 from rest_framework.permissions import AllowAny
+from rest_framework.authentication import TokenAuthentication
+from rest_framework.permissions import IsAuthenticated
 from requests.exceptions import HTTPError
 from social_django.utils import psa
 
+import logging
+
+LOGGER = logging.getLogger(__name__)
 
 class SocialSerializer(serializers.Serializer):
     """
@@ -94,8 +99,10 @@ def exchange_token(request, backend):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-@api_view(['GET']) # , 'POST'])
+@api_view(['GET'])
 def athletes_list(request):
+    user = request.user
+    LOGGER.info("User: %s" % user)
     if request.method == 'GET':
         data = Athlete.objects.all()
 
@@ -111,8 +118,19 @@ def athletes_list(request):
             
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
+@api_view(['GET'])
+def entities_list(request):
+    if request.method == 'GET':
+        data = Entity.objects.all()
+        serializer = EntitySerializer(data, context={'request': request}, many=True)
+        return Response(serializer.data)
+
+
 @api_view(['GET', 'POST'])
-def offers_list(request):
+# @authentication_classes([TokenAuthentication])
+# @permission_classes([IsAuthenticated])
+def orders_list(request):
     """
     post example:
     {"athlete_id": 7,
@@ -121,14 +139,16 @@ def offers_list(request):
         "buy_sell": "B"}
 """
     if request.method == 'GET':
-        data = Offer.objects.all()
+        data = Order.objects.all()
 
-        serializer = OfferSerializer(data, context={'request': request}, many=True)
+        serializer = OrderSerializer(data, context={'request': request}, many=True)
 
         return Response(serializer.data)
 
     elif request.method == 'POST':
-        serializer = OfferSerializer(data=request.data)
+        serializer = OrderSerializer(data=request.data)
+        serializer.user = request.user
+        LOGGER.info("User: %s", request.user)
         if serializer.is_valid():
             serializer.save()
             return Response(status=status.HTTP_201_CREATED)

@@ -3,13 +3,11 @@ import { Col, Container, Row } from "reactstrap";
 import AthleteList from "./AthleteList";
 // import NewStudentModal from "./NewStudentModal";
 
-import axios from "axios";
+import API from '../utils/api';
 
-import { API_URL } from "../constants";
-
-class Home extends Component {
+class Athletes extends Component {
   state = {
-    athletes: []
+    athletes: [],
   };
 
   componentDidMount() {
@@ -17,7 +15,10 @@ class Home extends Component {
   }
 
   getAthletes = () => {
-    axios.get(API_URL + "athletes/").then(res => this.setState({ athletes: res.data }));
+    console.log("Token: " + localStorage.getItem('token'));
+    // axios. Authorization: 'Token ' + localStorage.getItem('token')
+    API.getAthletes().then(res => this.setState({ athletes: res.data }));
+    // axios.get(API_URL + "athletes/", {headers: {'Authorization': 'Token ' + localStorage.getItem('token')}}).then(res => this.setState({ athletes: res.data }));
   };
 
   resetState = () => {
@@ -45,4 +46,4 @@ class Home extends Component {
   }
 }
 
-export default Home;
+export default Athletes;

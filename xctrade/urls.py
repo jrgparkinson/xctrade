@@ -20,11 +20,12 @@ from django.views.generic import TemplateView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    re_path(r'api/oauth/(?P<backend>[^/]+)/$', views.exchange_token),
+    re_path(r'^api/oauth/(?P<backend>[^/]+)/$', views.exchange_token),
     re_path(r'^api/athletes/$', views.athletes_list),
     # re_path(r'^api/athletes/([0-9])$', views.athletes_detail),
-    re_path(r'^api/offers/$', views.offers_list),
-    # re_path(r'^api/offers/([0-9])$', views.offers_detail),
+    re_path(r'^api/orders/$', views.orders_list),
+    re_path(r'^api/entities/$', views.entities_list),
+    # re_path(r'^api/orders/([0-9])$', views.orders_detail),
     re_path("googleafce55136e9c6cd8.html", TemplateView.as_view(template_name='googleafce55136e9c6cd8.html')),
     re_path(".*", TemplateView.as_view(template_name='index.html')),
 ]

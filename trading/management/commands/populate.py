@@ -1,5 +1,6 @@
 from django.core.management.base import BaseCommand
-from trading.models import Athlete, Club, Offer, Entity, Share
+from trading.models import Athlete, Club, Order, Entity, Share
+from django.contrib.auth.models import User
 import random
 
 class Command(BaseCommand):
@@ -10,9 +11,11 @@ class Command(BaseCommand):
         Club.objects.get_or_create(name="CUHH")
 
         entities = []
-        for entity in ("jparkinson", "lcotter", "mweatherseed", "jwoods"):
-            entity, created = Entity.objects.get_or_create(name=entity)
-            entities.append(entity)
+        for name in ("jparkinson", "lcotter", "mweatherseed", "jwoods"):
+            user, created = User.objects.get_or_create(username=name, password="password")
+            user.entity.name = name
+            user.entity.save()
+            entities.append(user.entity)
 
         for athlete in ("Jamie Parkinson",
             "Luke Cotter",
@@ -25,6 +28,6 @@ class Command(BaseCommand):
 
             # share, created = Share.objects.get_or_create(athlete=athlete, volume=random.random())
 
-            offer, created = Offer.objects.get_or_create(athlete=athlete, volume=random.random(), entity=random.choice(entities),
-            unit_price=random.random(), buy_sell=random.choice(Offer.TYPES)[0])
-            print(offer)
+            order, created = Order.objects.get_or_create(athlete=athlete, volume=random.random(), entity=random.choice(entities),
+            unit_price=random.random(), buy_sell=random.choice(Order.TYPES)[0])
+            print(order)

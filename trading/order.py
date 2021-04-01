@@ -3,9 +3,9 @@ from .asset import Asset
 from .entity import Entity
 from .athlete import Athlete
 
-class Offer(models.Model):
+class Order(models.Model):
     """
-    Offer to buy or sell something
+    Order to buy or sell something
     """
 
     BUY = "B"
@@ -14,7 +14,7 @@ class Offer(models.Model):
 
     OPEN = "O"
     FULFILLED = "F"
-    CANCELLED = "C" # maybe just delete the offer instead?
+    CANCELLED = "C" # maybe just delete the order instead?
     STATUSES = (
         (OPEN, "Open"),
         (FULFILLED, "Fulfilled"),
@@ -37,6 +37,6 @@ class Offer(models.Model):
     def save(self, *args, **kwargs):
         self.unit_price = round(self.unit_price, 2)
         self.volume = round(self.volume, 2)
-        super(Offer, self).save(*args, **kwargs)
+        super(Order, self).save(*args, **kwargs)
 
     

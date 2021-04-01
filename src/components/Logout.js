@@ -1,19 +1,20 @@
 import React from 'react';
 import { GoogleLogout } from 'react-google-login';
 
-const clientId =
-  '707788443358-u05p46nssla3l8tmn58tpo9r5sommgks.apps.googleusercontent.com';
+import { GOOGLE_OAUTH_ID, GOOGLE_OAUTH_SECRET } from "../constants";
+
 
 function Logout() {
   const onSuccess = () => {
     console.log('Logout made successfully');
-    alert('Logout made successfully ✌');
+    // alert('Logout made successfully ✌');
+    localStorage.setItem('token', null);
   };
 
   return (
     <div>
       <GoogleLogout
-        clientId={clientId}
+        clientId={GOOGLE_OAUTH_ID}
         buttonText="Logout"
         onLogoutSuccess={onSuccess}
       ></GoogleLogout>

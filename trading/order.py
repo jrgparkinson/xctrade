@@ -1,9 +1,21 @@
 from django.db import models
+from datetime import datetime
 import decimal
+import pytz
 from .asset import Asset, Share
 from .entity import Entity
 from .athlete import Athlete
 from .exceptions import InvalidOrderException
+
+class Trade(models.Model):
+    """ History of a trade """
+
+    athlete = models.ForeignKey(Athlete, on_delete=models.CASCADE)
+    volume = models.DecimalField(max_digits=10, decimal_places=2)
+    buyer = models.ForeignKey(Entity, related_name="%(app_label)s_%(class)s_buyer", on_delete=models.CASCADE)
+    seller = models.ForeignKey(Entity, related_name="%(app_label)s_%(class)s_seller", on_delete=models.CASCADE)
+    unit_price = models.DecimalField(decimal_places=2, max_digits=10)
+    timestamp = models.DateTimeField(auto_now_add=True)
 
 class Order(models.Model):
     """
@@ -33,6 +45,8 @@ class Order(models.Model):
     buy_sell = models.CharField(max_length=1, choices=TYPES, default=BUY)
     status = models.CharField(max_length=1, choices=STATUSES, default=OPEN)
     created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True, null=True)
+    # traded_at = models.DateTimeField(null=True)
 
     def __repr__(self):
         return f"{self.buy_sell}: {self.athlete} ({self.unfilled_volume}/{self.volume}) @ {self.unit_price} - {self.status}"
@@ -105,5 +119,12 @@ class Order(models.Model):
 
         buyer.save()
         seller.save()
+
+        Trade(athlete=self.athlete, volume=volume, buyer=buyer, seller=seller, unit_price=matched_price).save()
+
+        # self.traded_at = datetime.now(pytz.utc)
+        # other.traded_at = datetime.now(pytz.utc)
+
+        # trade
 
 

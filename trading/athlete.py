@@ -1,4 +1,6 @@
 from django.db import models
+from django.apps import apps
+from decimal import Decimal
 
 class Club(models.Model):
     name = models.CharField(max_length=100, unique=True)
@@ -23,3 +25,11 @@ class Athlete(models.Model):
 
     def __str__(self):
         return self.name
+
+    def value(self):
+        Trade = apps.get_model('trading.Trade')
+        recent_trades = Trade.objects.all().filter(athlete=self).order_by('-timestamp')
+        if recent_trades:
+            return recent_trades[0].unit_price
+        else:
+            return Decimal("NaN")

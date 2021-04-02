@@ -155,6 +155,31 @@ def orders_list(request):
             
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+@api_view(['PUT'])
+def orders_detail(request, pk):
+    try:
+        order = Order.objects.get(pk=pk)
+    except Order.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    # the only update allowed by the user is to cancel the order
+    LOGGER.info(request.data)
+    if "status" in request.data and request.data["status"] == "C":
+        order.status = request.data["status"]
+        order.save()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+    # for key in request.data:
+    #     if key not in ("status"):
+    #         request.data.pop(key, None)
+    
+    # serializer = OrderSerializer(Order, data=request.data, context={'request': request})
+    # if serializer.is_valid():
+    #     serializer.save()
+    #     return Response(status=status.HTTP_204_NO_CONTENT)
+    return Response("Only order update allowed is cancelling", status=status.HTTP_400_BAD_REQUEST)
+
+
 # @api_view(['PUT', 'DELETE'])
 # def athletes_detail(request, pk):
 #     try:

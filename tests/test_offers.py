@@ -26,6 +26,7 @@ class AthletesTests(APITestCase):
 
 
 class OrdersTests(APITestCase):
+    url = "/api/orders/"
 
     def setUp(self):
         ouccc, created = Club.objects.get_or_create(name="OUCCC")
@@ -53,7 +54,7 @@ class OrdersTests(APITestCase):
 
 
     def test_create_orders(self):
-        url = "/api/orders/"
+        
         data = {"athlete_id": 4,
         "volume": "0.99",
         "unit_price": "0.99",
@@ -63,11 +64,11 @@ class OrdersTests(APITestCase):
         client = APIClient()
         client.credentials(HTTP_AUTHORIZATION='Token ' + token.key)
 
-        response = client.post(url, data, format='json')
+        response = client.post(self.url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(Order.objects.count(), 1)
 
-        response = client.get(url, format='json')
+        response = client.get(self.url, format='json')
         self.assertEqual(json.loads(response.content), [{'athlete': {'club': {'name': 'OUCCC', 'pk': 1},
                'name': 'Joseph Woods',
               'pk': 4,
@@ -83,7 +84,7 @@ class OrdersTests(APITestCase):
         # Now add another order from someone else, check it's actioned
         client.credentials(HTTP_AUTHORIZATION='Token ' + Token.objects.get(user__username='lcotter').key)
 
-        response = client.post(url, {"athlete_id": 4,
+        response = client.post(self.url, {"athlete_id": 4,
         "volume": "0.2",
         "unit_price": "0.95",
         "buy_sell": "S"}, format='json')
@@ -110,10 +111,11 @@ class OrdersTests(APITestCase):
         self.assertEqual(buyer.capital, Decimal("999.81"))
         self.assertEqual(seller.capital, Decimal("1000.19"))
 
-
+        athlete = Athlete.objects.get(name="Joseph Woods")
+        self.assertEqual(athlete.value(), Decimal("0.97"))
 
         # Add another sell trade, check it is also actioned
-        response = client.post(url, {"athlete_id": 4,
+        response = client.post(self.url, {"athlete_id": 4,
         "volume": "0.1",
         "unit_price": "0.9",
         "buy_sell": "S"}, format='json')
@@ -130,8 +132,11 @@ class OrdersTests(APITestCase):
         self.assertEqual(buyer.capital, Decimal("999.72"))
         self.assertEqual(seller.capital, Decimal("1000.28"))
 
+        athlete = Athlete.objects.get(name="Joseph Woods")
+        self.assertEqual(athlete.value(), Decimal("0.95"))
+
         # Add a sell trade that's too expensive, shouldn't be actioned
-        response = client.post(url, {"athlete_id": 4,
+        response = client.post(self.url, {"athlete_id": 4,
         "volume": "0.1",
         "unit_price": "1.1",
         "buy_sell": "S"}, format='json')
@@ -142,7 +147,7 @@ class OrdersTests(APITestCase):
         self.assertEqual(order_seller.status, "O")
 
         # Add a sell trade for more shares than owned, shouldn't be created
-        response = client.post(url, {"athlete_id": 4,
+        response = client.post(self.url, {"athlete_id": 4,
         "volume": "20",
         "unit_price": "0.6",
         "buy_sell": "S"}, format='json')
@@ -150,7 +155,7 @@ class OrdersTests(APITestCase):
         self.assertEqual(Order.objects.count(), 4)
 
         # Buy trade for more money than we have, shouldn't be created
-        response = client.post(url, {"athlete_id": 4,
+        response = client.post(self.url, {"athlete_id": 4,
         "volume": "20",
         "unit_price": "100000",
         "buy_sell": "B"}, format='json')
@@ -160,6 +165,40 @@ class OrdersTests(APITestCase):
 
 
     def test_cancel_order(self):
-        self.assertEqual(1, 0)
-        
-  
+        token = Token.objects.get(user__username='jparkinson')
+        client = APIClient()
+        client.credentials(HTTP_AUTHORIZATION='Token ' + token.key)
+
+        # Create order
+        data = {"athlete_id": 4,
+                "volume": "0.99",
+                "unit_price": "0.99",
+                "buy_sell": "B"}
+
+    
+        response = client.post(self.url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(Order.objects.count(), 1)
+        order = Order.objects.get(athlete__id=4)
+        self.assertEqual(order.status, "O")
+
+        # Disallowed updates
+        for update in (
+            {"status": "P"},
+            {"status": "O"},
+            {"unit_price": "10.0"},
+        ):
+            response = client.put(self.url + f"{order.pk}/", update, format='json')
+            self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+            self.assertEqual(Order.objects.count(), 1)
+            order = Order.objects.get(athlete__id=4)
+            self.assertEqual(order.status, "O")
+            # self.assertEqual(order.unit_price, Decimal("O.99"))
+
+       
+        # Cancel order
+        response = client.put(self.url + f"{order.pk}/", {"status": "C"}, format='json')
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertEqual(Order.objects.count(), 1)
+        order = Order.objects.get(athlete__id=4)
+        self.assertEqual(order.status, "C")

@@ -1,7 +1,6 @@
 from django.db import models
 from polymorphic.models import PolymorphicModel
-from .athlete import Athlete
-from .entity import Entity
+from django.db.models import Q
 
 class Asset(PolymorphicModel):
     """
@@ -10,9 +9,9 @@ class Asset(PolymorphicModel):
 
 class Share(Asset):
 
-    athlete = models.ForeignKey(Athlete, on_delete=models.CASCADE)
-    volume = models.DecimalField(max_digits=10, decimal_places=2)
-    owner = models.ForeignKey(Entity, on_delete=models.CASCADE)
+    athlete = models.ForeignKey('Athlete', on_delete=models.CASCADE)
+    volume = models.DecimalField(max_digits=10, decimal_places=2, default="0.0")
+    owner = models.ForeignKey('Entity', on_delete=models.CASCADE)
 
     def save(self, *args, **kwargs):
         self.volume = round(self.volume, 2)
@@ -23,3 +22,9 @@ class Share(Asset):
 
     def __repr__(self):
         return self.__str__()
+
+    @staticmethod
+    def vol_for_athlete_entity(athlete, entity):
+        shares = Share.objects.all().filter(Q(athlete=athlete) & Q(owner=entity))
+        vol = sum([s.volume for s in shares]) if shares else 0.0
+        return vol

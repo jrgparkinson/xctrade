@@ -56,8 +56,7 @@ function App(props) {
         <Header />
         
         <SideNav />
-        <Login />
-        <Logout />
+        <BottomNav />
 
         <main className={classes.content}>
             <Switch>
@@ -65,8 +64,10 @@ function App(props) {
                 <Route path="/Athletes" component={Athletes} />
                 <Route path="/Orders" component={Orders} />
             </Switch>
+<Login />
+        <Logout />
         </main>
-        <BottomNav />
+        
         </BrowserRouter>
       </Fragment>
     );

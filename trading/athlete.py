@@ -31,7 +31,7 @@ class Athlete(models.Model):
         
     def get_value(self, time):
         Trade = apps.get_model('trading.Trade')
-        recent_trades = Trade.objects.all().filter((athlete=self) & Q(timestamp__lte=time)).order_by('-timestamp')
+        recent_trades = Trade.objects.all().filter(Q(athlete=self) & Q(timestamp__lte=time)).order_by('-timestamp')
         if recent_trades:
             return recent_trades[0].unit_price
         else:

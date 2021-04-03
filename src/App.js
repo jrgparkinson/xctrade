@@ -6,6 +6,7 @@ import Orders from "./components/Orders";
 import Login from "./components/Login";
 import Logout from "./components/Logout";
 import SideNav from './components/SideNav';
+import BottomNav from './components/BottomNav';
 import { Route, Switch, BrowserRouter } from 'react-router-dom';
 import { makeStyles } from "@material-ui/core/styles";
 
@@ -65,6 +66,7 @@ function App(props) {
                 <Route path="/Orders" component={Orders} />
             </Switch>
         </main>
+        <BottomNav />
         </BrowserRouter>
       </Fragment>
     );

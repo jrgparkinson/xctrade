@@ -56,8 +56,8 @@ class Command(BaseCommand):
                     # traceback.print_exc()
                     
                 # create some fake past trades
-                buyer = random.choices(entities)
-                seller = random.choices(entities)
+                buyer = random.choice(entities)
+                seller = random.choice(entities)
                 while buyer == seller:
                     seller = random.choices(entities)
                 t = Trade(athlete=athlete,

@@ -72,7 +72,7 @@ class OrdersTests(APITestCase):
         self.assertEqual(json.loads(response.content), [{'athlete': {'club': {'name': 'OUCCC', 'pk': 1},
                'name': 'Joseph Woods',
               'pk': 4,
-               'power_of_10': ''},
+               'power_of_10': '', "value": None},
    'buy_sell': 'B',
    'entity': {'capital': '1000.00', 'name': 'jparkinson', 'pk': 1, 'user': 1},
    'pk': 1,
@@ -112,7 +112,7 @@ class OrdersTests(APITestCase):
         self.assertEqual(seller.capital, Decimal("1000.19"))
 
         athlete = Athlete.objects.get(name="Joseph Woods")
-        self.assertEqual(athlete.value(), Decimal("0.97"))
+        self.assertEqual(athlete.value, Decimal("0.97"))
 
         # Add another sell trade, check it is also actioned
         response = client.post(self.url, {"athlete_id": 4,
@@ -133,7 +133,8 @@ class OrdersTests(APITestCase):
         self.assertEqual(seller.capital, Decimal("1000.28"))
 
         athlete = Athlete.objects.get(name="Joseph Woods")
-        self.assertEqual(athlete.value(), Decimal("0.95"))
+        # note that 0.945 is rounded towards nearest even integer (0)
+        self.assertEqual(athlete.value, Decimal("0.94"))
 
         # Add a sell trade that's too expensive, shouldn't be actioned
         response = client.post(self.url, {"athlete_id": 4,

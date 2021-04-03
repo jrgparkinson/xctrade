@@ -20,7 +20,8 @@ class Entity(models.Model):
         seller.capital += price
 
     def get_share(self, athlete):
-        share, created = Share.objects.get_or_create(athlete=athlete,owner=self)
+        share, created = Share.objects.get_or_create(athlete=athlete, owner=self)
+        share.save()
         return share
 
     def add_share(self, athlete, volume):

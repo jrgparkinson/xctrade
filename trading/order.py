@@ -1,11 +1,14 @@
 from django.db import models
 from datetime import datetime
-import decimal
+from decimal import Decimal
 import pytz
 from .asset import Asset, Share
 from .entity import Entity
 from .athlete import Athlete
 from .exceptions import InvalidOrderException
+import logging
+
+LOGGER = logging.getLogger(__name__)
 
 class Trade(models.Model):
     """ History of a trade """
@@ -55,8 +58,8 @@ class Order(models.Model):
         return self.__repr__()
 
     def save(self, *args, **kwargs):
-        self.unit_price = round(self.unit_price, 2)
-        self.volume = round(self.volume, 2)
+        self.unit_price = Decimal(round(self.unit_price, 2))
+        self.volume = Decimal(round(self.volume, 2))
         if not self.pk:
             self.unfilled_volume = self.volume
 
@@ -79,6 +82,7 @@ class Order(models.Model):
         return self.buy_sell == Order.SELL
 
     def can_fulfil(self, volume):
+        volume = Decimal(volume)
         if self.is_buy():
             return self.entity.capital >= self.unit_price * volume
         else:
@@ -105,7 +109,7 @@ class Order(models.Model):
         if buy_price < sell_price:
             raise InvalidOrderException
 
-        matched_price = round((buy_price + sell_price)/decimal.Decimal(2.0), 2)
+        matched_price = round((buy_price + sell_price)/Decimal(2.0), 2)
 
         self.unfilled_volume -= volume
         other.unfilled_volume -= volume
@@ -120,7 +124,9 @@ class Order(models.Model):
         buyer.save()
         seller.save()
 
-        Trade(athlete=self.athlete, volume=volume, buyer=buyer, seller=seller, unit_price=matched_price).save()
+        trade = Trade(athlete=self.athlete, volume=volume, buyer=buyer, seller=seller, unit_price=matched_price)
+        trade.save()
+        LOGGER.info("Created trade: %s", trade)
 
         # self.traded_at = datetime.now(pytz.utc)
         # other.traded_at = datetime.now(pytz.utc)

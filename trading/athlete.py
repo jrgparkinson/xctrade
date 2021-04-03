@@ -26,10 +26,11 @@ class Athlete(models.Model):
     def __str__(self):
         return self.name
 
+    @property
     def value(self):
         Trade = apps.get_model('trading.Trade')
         recent_trades = Trade.objects.all().filter(athlete=self).order_by('-timestamp')
         if recent_trades:
             return recent_trades[0].unit_price
         else:
-            return Decimal("NaN")
+            return None

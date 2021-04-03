@@ -1,6 +1,7 @@
 from django.db import models
 from polymorphic.models import PolymorphicModel
 from django.db.models import Q
+from decimal import Decimal
 
 class Asset(PolymorphicModel):
     """
@@ -14,7 +15,7 @@ class Share(Asset):
     owner = models.ForeignKey('Entity', on_delete=models.CASCADE)
 
     def save(self, *args, **kwargs):
-        self.volume = round(self.volume, 2)
+        self.volume = Decimal(round(float(self.volume), 2))
         super(Share, self).save(*args, **kwargs)
 
     def __str__(self):

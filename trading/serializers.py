@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Athlete, Club, Entity, Order, Asset, Share
+from .models import Athlete, Club, Entity, Order, Asset, Share, Trade
 from .exceptions import TradingException
 import logging
 
@@ -16,7 +16,8 @@ class AthleteSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Athlete 
-        fields = ('pk', 'name', 'club', 'power_of_10')
+        fields = ('pk', 'name', 'club', 'power_of_10', 'value')
+        read_only_fields = ("value", )
 
 
 class EntitySerializer(serializers.ModelSerializer):
@@ -35,6 +36,26 @@ class ShareSerializer(serializers.ModelSerializer):
         model = Share 
         fields = ('pk', 'athlete', 'volume')
         # depth = 1
+
+class TradeSerializer(serializers.ModelSerializer):
+    athlete = AthleteSerializer(many=False, read_only=True)
+    buyer = EntitySerializer(many=False, read_only=True)
+    seller = EntitySerializer(many=False, read_only=True)
+
+    class Meta:
+        model = Trade
+        # fields = ("pk", "athlete", "volume", "buyer", "seller", "unit_price", "timestamp")
+        fields = ("pk", "athlete", "volume", "buyer", "seller", "unit_price", "timestamp")
+
+class TradeSimpleSerializer(serializers.ModelSerializer):
+    # athlete = AthleteSerializer(many=False, read_only=True)
+    # buyer = EntitySerializer(many=False, read_only=True)
+    # seller = EntitySerializer(many=False, read_only=True)
+
+    class Meta:
+        model = Trade
+        # fields = ("pk", "athlete", "volume", "buyer", "seller", "unit_price", "timestamp")
+        fields = ("volume", "unit_price", "timestamp")
 
 
 class OrderSerializer(serializers.ModelSerializer):

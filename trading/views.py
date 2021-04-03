@@ -13,7 +13,8 @@ from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 from requests.exceptions import HTTPError
 from social_django.utils import psa
-
+from django.db.models import Q
+import traceback
 import logging
 
 LOGGER = logging.getLogger(__name__)
@@ -118,12 +119,49 @@ def athletes_list(request):
             
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+# @api_view(['GET'])
+# def athlete_orders(request, pk):
+#     try:
+#         athlete = Athlete.objects.get(pk=pk)
+#     except Athlete.DoesNotExist:
+#         return Response(status=status.HTTP_404_NOT_FOUND)
+
+#     serializer = OrderSerializer(Order.objects.all().filter(athlete=athlete), context={'request': request}, many=True)
+#     return Response(serializer.data)
+
+# @api_view(['GET'])
+# def athlete_trades(request, pk):
+#     try:
+#         athlete = Athlete.objects.get(pk=pk)
+#     except Athlete.DoesNotExist:
+#         return Response(status=status.HTTP_404_NOT_FOUND)
+
+#     serializer = OrderSerializer(Trade.objects.all().filter(athlete=athlete), context={'request': request}, many=True)
+#     return Response(serializer.data)
 
 @api_view(['GET'])
 def entities_list(request):
     if request.method == 'GET':
         data = Entity.objects.all()
         serializer = EntitySerializer(data, context={'request': request}, many=True)
+        return Response(serializer.data)
+
+@api_view(['GET'])
+def trades_list(request):
+    if request.method == 'GET':
+        data = Trade.objects.all()
+
+        serializer = TradeSerializer
+        
+        if "athlete_id" in request.query_params:
+            data = data.filter(athlete__id=request.query_params["athlete_id"])
+            serializer = TradeSimpleSerializer
+
+        if "entity_id" in request.query_params:
+            data = data.filter(Q(buyer__id=request.query_params["entity_id"]) |
+                               Q(seller__id=request.query_params["entity_id"]))
+
+        serializer = TradeSerializer(data, context={'request': request}, many=True)
         return Response(serializer.data)
 
 
@@ -140,6 +178,12 @@ def orders_list(request):
 """
     if request.method == 'GET':
         data = Order.objects.all()
+
+        if "athlete_id" in request.query_params:
+            data = data.filter(athlete__id=request.query_params["athlete_id"])
+
+        if "entity_id" in request.query_params:
+            data = data.filter(entity__id=request.query_params["entity_id"])
 
         serializer = OrderSerializer(data, context={'request': request}, many=True)
 

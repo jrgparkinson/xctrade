@@ -1,5 +1,5 @@
 from .athlete import Athlete, Club
-from .order import Order
+from .order import Order, Trade
 from .entity import User, Entity
 from .asset import Asset, Share
 from django.db.models.signals import post_save, pre_save
@@ -57,15 +57,14 @@ def match_order(sender, instance, created, **kwargs):
             if vol_unfilled == 0.0:
                 break
 
-        if vol_unfilled > 0.0:
-            return
+        LOGGER.info("Orders to use: %s", order_vols)        
+        # We can fill part of this order
+        # if vol_unfilled > 0.0:
+        #     return
 
         # By now, we can start filling orders
-
-        # Check we can fulfill
-        # if instance.is_buy():
-
         for order_vol in order_vols:
+            LOGGER.info("Fill with %s", (order_vol))
             other_order = order_vol[0]
             vol = order_vol[1]
             instance.fill_with(other_order, vol)

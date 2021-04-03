@@ -26,7 +26,7 @@ urlpatterns = [
     # re_path(r'^api/athlete_trades/(?P<pk>[0-9]+)/$', views.athlete_trades),
     re_path(r'^api/orders/$', views.orders_list),
     re_path(r'^api/entities/$', views.entities_list),
-    
+    re_path(r'^api/profile/$', views.profile),
     re_path(r'^api/trades/$', views.trades_list),
     re_path(r'^api/orders/(?P<pk>[0-9]+)/$', views.orders_detail),
     re_path("googleafce55136e9c6cd8.html", TemplateView.as_view(template_name='googleafce55136e9c6cd8.html')),

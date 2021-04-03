@@ -3,9 +3,12 @@ import { makeStyles } from '@material-ui/core/styles';
 import BottomNavigation from '@material-ui/core/BottomNavigation';
 import BottomNavigationAction from '@material-ui/core/BottomNavigationAction';
 import RestoreIcon from '@material-ui/icons/Restore';
-import FavoriteIcon from '@material-ui/icons/Favorite';
+import DirectionsRunIcon from '@material-ui/icons/DirectionsRun';
+import FormatListNumberedIcon from '@material-ui/icons/FormatListNumbered';
 import LocationOnIcon from '@material-ui/icons/LocationOn';
+import MonetizationOnIcon from '@material-ui/icons/MonetizationOn';
 import { Link, NavLink } from 'react-router-dom';
+import TimerIcon from '@material-ui/icons/Timer';
 
 const useStyles = makeStyles({
   root: {
@@ -29,11 +32,13 @@ export default function BottomNav() {
       className={classes.root}
     >
       <BottomNavigationAction component={NavLink}
-        to="/Athletes" label="Athletes" icon={<RestoreIcon />} />
+        to="/Athletes" label="Athletes" icon={<DirectionsRunIcon />} />
       <BottomNavigationAction component={NavLink}
-        to="/Orders" label="Leaderboard" icon={<FavoriteIcon />} />
+        to="/Leaderboard" label="Leaderboard" icon={<FormatListNumberedIcon />} />
       <BottomNavigationAction component={Link}
-        to="/Athletes" label="Profile" icon={<LocationOnIcon />} />
+        to="/Profile" label="Profile" icon={<MonetizationOnIcon />} />
+<BottomNavigationAction component={Link}
+        to="/Races" label="Races" icon={<TimerIcon />} />
     </BottomNavigation>
   );
 }

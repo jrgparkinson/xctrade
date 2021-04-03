@@ -147,6 +147,17 @@ def entities_list(request):
         return Response(serializer.data)
 
 @api_view(['GET'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
+def profile(request):
+    if request.method == 'GET':
+        user = request.user
+        data = user.entity
+        serializer = EntitySerializer(data, context={'request': request}, many=False)
+        return Response(serializer.data)
+
+
+@api_view(['GET'])
 def trades_list(request):
     if request.method == 'GET':
         data = Trade.objects.all()

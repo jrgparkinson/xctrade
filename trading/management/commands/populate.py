@@ -1,5 +1,5 @@
 from django.core.management.base import BaseCommand
-from trading.models import Athlete, Club, Order, Entity, Share
+from trading.models import Athlete, Club, Order, Entity, Share, Trade
 from django.contrib.auth.models import User
 import random
 import logging

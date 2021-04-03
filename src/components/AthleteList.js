@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { Table } from "reactstrap";
+import { AthleteCard } from "./Athlete.js"
 // import NewathleteModal from "./NewathleteModal";
 // import ConfirmRemovalModal from "./ConfirmRemovalModal";
 
@@ -7,6 +8,20 @@ class AthleteList extends Component {
   render() {
     const athletes = this.props.athletes;
     return (
+<div>
+{!athletes || athletes.length <= 0 ? (
+            <tr>
+              <td colSpan="6" align="center">
+                <b>Loading athletes...</b>
+              </td>
+            </tr>
+          ) : (
+            athletes.map(athlete => (
+              <AthleteCard athlete={athlete} />
+              
+            ))
+          )}
+
       <Table dark>
         <thead>
           <tr>
@@ -31,6 +46,7 @@ class AthleteList extends Component {
           )}
         </tbody>
       </Table>
+</div>
     );
   }
 }

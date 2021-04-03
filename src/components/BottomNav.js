@@ -1,25 +1,37 @@
-import { Link } from 'react-router-dom';
-
+import React from 'react';
+import { makeStyles } from '@material-ui/core/styles';
 import BottomNavigation from '@material-ui/core/BottomNavigation';
 import BottomNavigationAction from '@material-ui/core/BottomNavigationAction';
+import RestoreIcon from '@material-ui/icons/Restore';
+import FavoriteIcon from '@material-ui/icons/Favorite';
+import LocationOnIcon from '@material-ui/icons/LocationOn';
+import { Link } from 'react-router-dom';
 
-export default function Header() {
+const useStyles = makeStyles({
+  root: {
+    width: 500,
+  },
+});
+
+export default function BottomNav() {
+  const classes = useStyles();
+  const [value, setValue] = React.useState(0);
+
   return (
-
-<BottomNavigation>
-    <BottomNavigationAction
-        component={Link}
-        to="/Athletes"
-        label="Athletes"
-        value="Athletes"
-    />
-<BottomNavigationAction
-        component={Link}
-        to="/Orders"
-        label="Orders"
-        value="Orders"
-        
-    />
-</BottomNavigation>
-);
+    <BottomNavigation
+      value={value}
+      onChange={(event, newValue) => {
+        setValue(newValue);
+      }}
+      showLabels
+      className={classes.root}
+    >
+      <BottomNavigationAction component={Link}
+        to="/Athletes" label="Athletes" icon={<RestoreIcon />} />
+      <BottomNavigationAction component={Link}
+        to="/Orders" label="Leaderboard" icon={<FavoriteIcon />} />
+      <BottomNavigationAction component={Link}
+        to="/Athletes" label="Profile" icon={<LocationOnIcon />} />
+    </BottomNavigation>
+  );
 }

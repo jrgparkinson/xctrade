@@ -20,6 +20,6 @@ export default function Header() {
         value="Orders"
         
     />
-</BottomNavigation
+</BottomNavigation>
 );
 }

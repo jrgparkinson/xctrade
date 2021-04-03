@@ -7,6 +7,7 @@ import DirectionsRunIcon from '@material-ui/icons/DirectionsRun';
 import FormatListNumberedIcon from '@material-ui/icons/FormatListNumbered';
 import LocationOnIcon from '@material-ui/icons/LocationOn';
 import MonetizationOnIcon from '@material-ui/icons/MonetizationOn';
+import SyncAltIcon from '@material-ui/icons/SyncAlt';
 import { Link, NavLink } from 'react-router-dom';
 import TimerIcon from '@material-ui/icons/Timer';
 
@@ -32,7 +33,7 @@ export default function BottomNav() {
       className={classes.root}
     >
       <BottomNavigationAction component={NavLink}
-        to="/Athletes" label="Athletes" icon={<DirectionsRunIcon />} />
+        to="/Athletes" label="Trade" icon={<SyncAltIcon />} />
       <BottomNavigationAction component={NavLink}
         to="/Leaderboard" label="Leaderboard" icon={<FormatListNumberedIcon />} />
       <BottomNavigationAction component={Link}

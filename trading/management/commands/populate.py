@@ -59,7 +59,7 @@ class Command(BaseCommand):
                 buyer = random.choice(entities)
                 seller = random.choice(entities)
                 while buyer == seller:
-                    seller = random.choices(entities)
+                    seller = random.choice(entities)
                 t = Trade(athlete=athlete,
                       volume=random.random(),
                       unit_price=random.random(),

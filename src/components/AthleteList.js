@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { Table } from "reactstrap";
-import { AthleteCard } from "./Athlete";
+import AthleteCard from "./Athlete";
 // import NewathleteModal from "./NewathleteModal";
 // import ConfirmRemovalModal from "./ConfirmRemovalModal";
 

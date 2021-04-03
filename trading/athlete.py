@@ -40,6 +40,10 @@ class Athlete(models.Model):
     @property
     def prev_value(self):
         return self.get_value(datetime.now() - timedelta(days=7))
+        
+    @property
+    def percent_change(self):
+        return 100.0*(self.value-self.prev_value)/self.value
 
     @property
     def value(self):

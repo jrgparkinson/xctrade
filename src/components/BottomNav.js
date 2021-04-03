@@ -6,7 +6,7 @@ import BottomNavigationAction from '@material-ui/core/BottomNavigationAction';
 export default function Header() {
   return (
 
-<BottomNavigation value={value} onChange={this.handleChange}>
+<BottomNavigation>
     <BottomNavigationAction
         component={Link}
         to="/Athletes"

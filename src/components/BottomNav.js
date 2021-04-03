@@ -9,7 +9,7 @@ import LocationOnIcon from '@material-ui/icons/LocationOn';
 import MonetizationOnIcon from '@material-ui/icons/MonetizationOn';
 import SyncAltIcon from '@material-ui/icons/SyncAlt';
 import { Link, NavLink } from 'react-router-dom';
-import TimerIcon from '@material-ui/icons/Timer';
+import TrendingUpIcon from '@material-ui/icons/TrendingUp';
 
 const useStyles = makeStyles({
   root: {
@@ -37,9 +37,9 @@ export default function BottomNav() {
       <BottomNavigationAction component={NavLink}
         to="/Leaderboard" label="Leaderboard" icon={<FormatListNumberedIcon />} />
       <BottomNavigationAction component={Link}
-        to="/Profile" label="Profile" icon={<MonetizationOnIcon />} />
+        to="/Profile" label="Portfolio" icon={<TrendingUpIcon />} />
 <BottomNavigationAction component={Link}
-        to="/Races" label="Races" icon={<TimerIcon />} />
+        to="/Races" label="Races" icon={<DirectionsRunIcon />} />
     </BottomNavigation>
   );
 }

@@ -43,7 +43,7 @@ class Athlete(models.Model):
         
     @property
     def percent_change(self):
-        return 100.0*(self.value-self.prev_value)/self.value
+        return round (100.0*float((self.value-self.prev_value)/self.value), 2)
 
     @property
     def value(self):

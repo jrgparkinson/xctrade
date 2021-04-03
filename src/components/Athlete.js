@@ -27,7 +27,7 @@ const useStyles = makeStyles((theme) => ({
   
 }));
 
-export default function AthleteCard(props) {
+export default function AthleteCard({athlete}) {
   const classes = useStyles();
   const theme = useTheme();
 
@@ -36,13 +36,13 @@ export default function AthleteCard(props) {
       <div className={classes.details}>
         <CardContent className={classes.content}>
           <Typography component="h5" variant="h5">
-            {props.name}
+            {athlete.name}
           </Typography>
      
         </CardContent>
         <div className={classes.value}>
           <Typography variant="subtitle1" color="textSecondary">
-            {props.value}, {props.percent_change}
+            {athlete.value}, {athlete.percent_change}
           </Typography>
         </div>
       </div>

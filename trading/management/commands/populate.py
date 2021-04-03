@@ -5,6 +5,7 @@ import random
 import logging
 import traceback
 from trading.exceptions import InvalidOrderException
+from datetime import datetime, timedelta
 
 LOGGER = logging.getLogger(__name__)
 
@@ -29,7 +30,9 @@ class Command(BaseCommand):
             "Joseph Woods",
             "Jack Millar",
             "Noah Hurton",
-            "Oliver Paulin"):
+            "Oliver Paulin",
+            "Dan Bundred",
+            "Tom Wood"):
             athlete, created = Athlete.objects.get_or_create(name=athlete, club=ouccc)
 
             for entity in entities:
@@ -51,7 +54,17 @@ class Command(BaseCommand):
                 except InvalidOrderException as e:
                     LOGGER.info(e)
                     # traceback.print_exc()
-                except Exception as e:
-                    LOGGER.info(e)
-                    traceback.print_exc()
-                    raise e
+                    
+                # create some fake past trades
+                buyer = random.choices(entities)
+                seller = random.choices(entities)
+                while buyer == seller:
+                    seller = random.choices(entities)
+                t = Trade(athlete=athlete,
+                      volume=random.random(),
+                      unit_price=random.random(),
+                      buyer=buyer,
+                      seller=seller)
+                t.save()
+                t.timestamp=datetime.now()-timedelta(days=20*random.random())
+                t.save()

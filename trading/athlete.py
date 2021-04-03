@@ -1,6 +1,8 @@
 from django.db import models
 from django.apps import apps
 from decimal import Decimal
+from datetime import datetime, timedelta
+from django.db.models import Q
 
 class Club(models.Model):
     name = models.CharField(max_length=100, unique=True)
@@ -25,6 +27,23 @@ class Athlete(models.Model):
 
     def __str__(self):
         return self.name
+        
+        
+    def get_value(self, time):
+        Trade = apps.get_model('trading.Trade')
+        recent_trades = Trade.objects.all().filter((athlete=self) & Q(timestamp__lte=time)).order_by('-timestamp')
+        if recent_trades:
+            return recent_trades[0].unit_price
+        else:
+            return None
+
+    @property
+    def prev_value(self):
+        return self.get_value(datetime.now() - timedelta(days=7))
+        
+    @property
+    def percent_change(self):
+        return 100.0*(self.value-self.prev_value)/self.value
 
     @property
     def value(self):

@@ -16,8 +16,8 @@ class AthleteSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Athlete 
-        fields = ('pk', 'name', 'club', 'power_of_10', 'value')
-        read_only_fields = ("value", )
+        fields = ('pk', 'name', 'club', 'power_of_10', 'value', "prev_value", "percent_change")
+        read_only_fields = ("value", "percent_change", "prev_value")
 
 
 class EntitySerializer(serializers.ModelSerializer):

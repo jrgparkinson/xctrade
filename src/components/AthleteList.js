@@ -25,7 +25,7 @@ class AthleteList extends Component {
           ) : (
             athletes.map(athlete => (
               <tr key={athlete.pk}>
-                <td>{athlete.name}</td>
+                <td>{athlete.name}, {athlete.value} +/- {athlete.percent_change}</td>
               </tr>
             ))
           )}

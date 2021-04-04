@@ -9,11 +9,13 @@ import Typography from '@material-ui/core/Typography';
 const useStyles = makeStyles((theme) => ({
   root: {
     display: 'flex',
+    
     margin: theme.spacing(2)
   },
   details: {
     display: 'flex',
     flexDirection: 'row',
+    justifyContent: 'space-between',
   },
   content: {
     flex: '1 0 auto',
@@ -21,7 +23,7 @@ const useStyles = makeStyles((theme) => ({
   
   value: {
     display: 'flex',
-    alignItems: 'center',
+    alignItems: 'right',
     paddingLeft: theme.spacing(1),
     paddingBottom: theme.spacing(1),
   },
@@ -39,7 +41,7 @@ export default function AthleteCard({athlete}) {
     <Card className={classes.root}>
       <div className={classes.details}>
         <CardContent className={classes.content}>
-          <Typography component="h5" variant="h5">
+          <Typography component="h6" variant="h6">
             {athlete.name}
           </Typography>
      

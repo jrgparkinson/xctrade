@@ -69,17 +69,15 @@ class OrdersTests(APITestCase):
         self.assertEqual(Order.objects.count(), 1)
 
         response = client.get(self.url, format='json')
-        self.assertEqual(json.loads(response.content), [{'athlete': {'club': {'name': 'OUCCC', 'pk': 1},
-               'name': 'Joseph Woods',
-              'pk': 4,
-               'power_of_10': '', "value": None},
-   'buy_sell': 'B',
-   'entity': {'capital': '1000.00', 'name': 'jparkinson', 'pk': 1, 'user': 1},
-   'pk': 1,
-   'status': 'O',
-   'unit_price': '0.99',
-   'volume': '0.99'}])
-
+        json_response = json.loads(response.content)
+        self.assertEqual(len(json_response), 1)
+        self.assertEqual(json_response.athlete.pk, 1)
+        self.assertEqual(json_response.entity.pk, 1)
+        self.assertEqual(json_response.status, "O")
+        self.assertEqual(json_response.buu_sell, "B")
+        self.assertEqual(json_response.unit_price, "0.99")
+        self.assertEqual(json_response.volume, "0.99")
+        
 
         # Now add another order from someone else, check it's actioned
         client.credentials(HTTP_AUTHORIZATION='Token ' + Token.objects.get(user__username='lcotter').key)

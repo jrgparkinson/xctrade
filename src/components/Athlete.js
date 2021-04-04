@@ -9,6 +9,7 @@ import Typography from '@material-ui/core/Typography';
 const useStyles = makeStyles((theme) => ({
   root: {
     display: 'flex',
+    margin: theme.spacing(2)
   },
   details: {
     display: 'flex',
@@ -30,6 +31,9 @@ const useStyles = makeStyles((theme) => ({
 export default function AthleteCard({athlete}) {
   const classes = useStyles();
   const theme = useTheme();
+  
+  var change = athlete.percent_change
+  if (change >= 0) { change = "+" + change; }
 
   return (
     <Card className={classes.root}>
@@ -42,7 +46,7 @@ export default function AthleteCard({athlete}) {
         </CardContent>
         <div className={classes.value}>
           <Typography variant="subtitle1" color="textSecondary">
-            {athlete.value}, {athlete.percent_change}
+            ${athlete.value}, {athlete.percent_change}{athlete.percent_change}%
           </Typography>
         </div>
       </div>

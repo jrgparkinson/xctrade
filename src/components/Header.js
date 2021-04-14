@@ -18,7 +18,7 @@ import Snackbar from '@material-ui/core/Snackbar';
 import {Link} from 'react-router-dom';
 
 const options = [
-  'About',
+  {text: 'About', link: "/About"}
 ];
 
 const ITEM_HEIGHT = 48;
@@ -139,10 +139,10 @@ export default function Header() {
           >
             {options.map((option) => (
               <MenuItem 
-              component={ Link } to="/athletes/"
-              key={option}
+              component={ Link } to={option.link}
+              key={option.text}
                >
-                 {option}
+                 {option.text}
               </MenuItem>
             ))}
           </Menu>

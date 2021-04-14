@@ -16,6 +16,9 @@ npm run start # will typically run at http://localhost:3000/
 
 Head to `http://localhost:3000/` to view the app. 
 
+## Deploying
+Following any commit to the `master` branch, the app is automatically deployed to [https://xctrade.herokuapp.com/](Heroku). 
+
 ## Prerequisites
 This app requires [https://www.python.org/downloads/](Python 3) and [https://nodejs.org/en/](Node.js). 
 

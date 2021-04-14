@@ -7,6 +7,8 @@ import Races from './components/Races';
 import Leaderboard from './components/Leaderboard';
 import SideNav from './components/SideNav';
 import BottomNav from './components/BottomNav';
+import Bank from './components/Bank';
+import About from './components/About';
 import {Route, Switch, BrowserRouter} from 'react-router-dom';
 import {makeStyles} from '@material-ui/core/styles';
 
@@ -70,6 +72,8 @@ function App(props) {
             <Route path="/Leaderboard" component={Leaderboard} />
             <Route path="/Portfolio" component={Portfolio} />
             <Route path="/Races" component={Races} />
+            <Route path="/About" component={About} />
+            <Route path="/Bank" component={Bank} />
           </Switch>
 
         </main>

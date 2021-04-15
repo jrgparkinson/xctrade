@@ -50,7 +50,7 @@ class DividendTests(APITestCase):
 
         # Create race and results
         race, created = Race.objects.get_or_create(
-            name="Race", time=datetime.now(), min_dividend=10, max_dividend=100
+            name="Race", time=datetime.now(pytz.utc), min_dividend=10, max_dividend=100
         )
 
         Result.objects.all().filter(race=race).delete()

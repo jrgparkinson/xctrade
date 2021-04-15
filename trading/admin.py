@@ -21,7 +21,6 @@ from django.db.models import Q
 
 
 admin.site.register(Entity)
-admin.site.register(Auction)
 # admin.site.register(Race)
 # admin.site.register(Result)
 # admin.site.register(Athlete)
@@ -363,3 +362,28 @@ class RaceAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Race, RaceAdmin)
+
+
+
+# Auctions
+class AuctionAdmin(admin.ModelAdmin):
+    actions = ["settle_bids"]
+
+    # inlines = [
+    #     LotInline,
+    # ]
+
+    def settle_bids(self, request, queryset):
+        for auction in queryset:
+            error = None
+
+            try:
+                auction.settle_bids()
+            except TradingException as e:
+                self.message_user(request, str(e), messages.ERROR)
+                return
+
+        self.message_user(request, "Bids settled", messages.SUCCESS)
+
+
+admin.site.register(Auction, AuctionAdmin)

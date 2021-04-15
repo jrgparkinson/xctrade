@@ -43,7 +43,7 @@ class Athlete(models.Model):
 
     @property
     def prev_value(self):
-        return self.get_value(datetime.now() - timedelta(days=7))
+        return self.get_value(datetime.now(pytz.utc) - timedelta(days=7))
 
     @property
     def percent_change(self):
@@ -80,7 +80,7 @@ class Athlete(models.Model):
         """ Sum volume of all trades for athlete in past week"""
         Trade = apps.get_model("trading.Trade")
 
-        one_week_ago = datetime.now() - timedelta(weeks=1)
+        one_week_ago = datetime.now(pytz.utc) - timedelta(weeks=1)
         recent_trades = Trade.objects.all().filter(
             Q(athlete=self) & Q(timestamp__gte=one_week_ago)
         )

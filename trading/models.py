@@ -29,12 +29,20 @@ def pay_dividend(sender, instance, created, **kwargs):
         instance.save()
 
 
-@receiver(post_save, sender=Trade)
-def execute_trade(sender, instance, created, **kwargs):
+# @receiver(post_save, sender=Trade)
+# def execute_trade(sender, instance, created, **kwargs):
+#     """ Pay execute trade upon creation """
+#     if created:
+#         instance.do_trade()
+#         instance.save()
+@receiver(pre_save, sender=Trade)
+def execute_trade(sender, instance, **kwargs):
     """ Pay execute trade upon creation """
-    if created:
+    if instance.pk is None:
         instance.do_trade()
-        instance.save()
+        # instance.save()
+    # else:
+    #     instance.save()
 
 
 @receiver(post_save, sender=User)

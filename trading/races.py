@@ -26,6 +26,9 @@ class Race(models.Model):
     def __str__(self):
         return "{} ({})".format(self.name, self.time.strftime("%d/%m/%Y %H:%m"))
 
+    def __repr__(self):
+        return self.__str__()
+
     @property
     def has_results(self):
         return len(self.result_set.all()) > 0

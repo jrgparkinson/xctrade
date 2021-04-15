@@ -7,9 +7,7 @@ import {NavLink} from 'react-router-dom';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import {ListItemIcon} from '@material-ui/core';
-import {navLinks} from '../utils/links';
-
-const drawerWidth = 200;
+import {getNavLinks, drawerWidth, breakpointSize} from '../utils/links';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -19,11 +17,18 @@ const useStyles = makeStyles((theme) => ({
     zIndex: theme.zIndex.drawer + 1,
   },
   drawer: {
-    width: drawerWidth,
-    flexShrink: 0,
-    [theme.breakpoints.down('xs')]: {
+    // width: drawerWidth,
+    // flexShrink: 0,
+    // [theme.breakpoints.down('xs')]: {
+    //   width: 0,
+    //   display: 'none',
+    // },
       width: 0,
       display: 'none',
+      flexShrink: 0,
+    [theme.breakpoints.up(breakpointSize)]: {
+      width: drawerWidth,
+      display: 'inline',
     },
   },
   drawerPaper: {
@@ -53,7 +58,7 @@ export default function SideNav() {
       <Toolbar />
       <div className={classes.drawerContainer}>
         <List>
-          {navLinks.map((link, index) => (
+          {getNavLinks().map((link, index) => (
             <ListItem button key={link.text} component={NavLink}
               activeClassName="Mui-selected"
               to={'/' + link.link}>

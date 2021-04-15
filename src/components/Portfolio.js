@@ -5,12 +5,16 @@ import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import API from '../utils/api';
 import {Link} from 'react-router-dom';
+import EditIcon from '@material-ui/icons/Edit';
+import TextField from '@material-ui/core/TextField';
+import Button from '@material-ui/core/Button';
 
 class Portfolio extends Component {
   state = {
     profile: {},
     shares: [],
-    dividends: []
+    dividends: [],
+    editingName: false
   };
 
   componentDidMount() {
@@ -27,6 +31,22 @@ class Portfolio extends Component {
     API.getDividends().then(res => this.setState({ dividends: res.data }));
   };
 
+  editName = (e) => {
+    this.setState({editingName: true});
+  }
+
+  changeName = (e) => {
+    let p = this.state.profile
+
+    p.name = e.target.value;
+    this.setState({profile: p});
+  }
+
+  saveProfile = (e) => {
+    API.saveProfile({name: this.state.profile.name}).then(res => this.setState({ profile: this.state.profile }));
+    this.setState({editingName: false});
+  }
+
   render() {
     if (!API.isAuthorised()) {
         return (
@@ -34,19 +54,29 @@ class Portfolio extends Component {
         );
     }
 
-
     console.log(this.state.profile);
     let profile = this.state.profile;
     let shares = this.state.shares;
     let dividends = this.state.dividends;
-    console.log(shares);
+    // console.log(shares);
 
     let apiKey = API.getKey();
 
     let sharesValue = Number(profile.portfolio_value - profile.capital).toFixed(2);
     return (
       <Container>
-          <h1>{profile.name}</h1>
+        {this.state.editingName ? 
+        <div style={{
+          display: "inline-flex",
+          verticalAlign: "middle"}}>
+        <TextField id="name" label="Name" size="small" value={this.state.profile.name} variant="outlined" 
+        onChange={this.changeName}/>
+        <Button variant="contained" color="primary" onClick={this.saveProfile}
+        style={{marginLeft:5}}>
+  Save
+  </Button></div>
+         :
+          <h1>{profile.name}<EditIcon onClick={this.editName} style={{marginLeft:10}}/></h1>}
           <Card style={{marginTop:10}}>
       <CardContent>
         <h2>Portfolio value: {profile.portfolio_value}</h2>
@@ -75,7 +105,6 @@ class Portfolio extends Component {
             shares.map((share, index) => (
               <tr key={share.pk}>
                 <td><Link to={'/athletes/' + share.athlete.pk + '/'}>{share.athlete.name}</Link></td>
-                
                 <td>{share.volume}</td>
                 <td>{share.volume*share.athlete.value} ({share.athlete.value})</td>
               </tr>

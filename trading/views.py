@@ -6,7 +6,7 @@ from rest_framework.decorators import (
 )
 from rest_framework import status
 
-from .models import Athlete, Order, Share, Dividend
+from .models import Athlete, Order, Share, Dividend, Auction, Bid
 from .serializers import *
 
 from django.conf import settings
@@ -131,15 +131,78 @@ def entities_list(request):
         return Response(serializer.data)
 
 
-@api_view(["GET"])
+@api_view(["GET", "PUT"])
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])
 def profile(request):
+    user = request.user
     if request.method == "GET":
-        user = request.user
         data = user.entity
         serializer = EntitySerializer(data, context={"request": request}, many=False)
         return Response(serializer.data)
+    elif request.method == "PUT":
+        if "name" in request.data:
+            user.entity.name = request.data["name"]
+        else:
+            return Response(
+        "Only profile update allowed is name change", status=status.HTTP_400_BAD_REQUEST
+    ) 
+        user.entity.save()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+    return Response(
+        "Bad request", status=status.HTTP_400_BAD_REQUEST
+    )
+
+@api_view(["GET"])
+def auction_shares(request):
+    auction = Auction.get_active_auction()
+
+    if not auction:
+        return Response(
+        "No current auction found", status=status.HTTP_404_NOT_FOUND
+    )
+
+    serializer = ShareSerializer(auction.available_shares(), context={"request": request}, many=True)
+    return Response(serializer.data) 
+
+
+@api_view(["GET"])
+def active_auction(request):
+    auction = Auction.get_active_auction()
+
+    if not auction:
+        return Response(
+        "No current auction found", status=status.HTTP_404_NOT_FOUND
+    )
+
+    serializer = AuctionSerializer(auction, context={"request": request}, many=False)
+    return Response(serializer.data)
+
+
+@api_view(["GET", "POST"])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
+def bids_list(request, auction_pk):
+    if request.method == "GET":
+        bids = Bid.objects.all().filter(auction__pk=auction_pk, bidder=request.user.entity)
+        # LOGGER.info("Bids: %s" % bids)
+        serializer = BidSerializer(bids, context={"request": request}, many=True)
+        return Response(serializer.data)
+    elif request.method == "POST":
+        # Save the bids
+        LOGGER.info(request.data)
+        serializer = BidSerializer(data=request.data, many=True, user=request.user)
+        # serializer.user = request.user
+        LOGGER.info("Valid serializer? %s " % serializer.is_valid())
+        if serializer.is_valid():
+            serializer.save()
+            return Response(status=status.HTTP_201_CREATED)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    return Response(status=status.HTTP_400_BAD_REQUEST)
+    
 
 
 @api_view(["GET"])

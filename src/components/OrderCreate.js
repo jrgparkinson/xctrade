@@ -10,6 +10,7 @@ import {useTheme, makeStyles} from '@material-ui/core/styles';
 import Alert from '@material-ui/lab/Alert';
 import API from '../utils/api';
 import Snackbar from '@material-ui/core/Snackbar';
+import {breakpointSize} from "../utils/links";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -20,11 +21,10 @@ const useStyles = makeStyles((theme) => ({
     position: 'fixed',
     bottom: 60,
     zIndex: 1100,
-    [theme.breakpoints.up('sm')]: {
+    [theme.breakpoints.up(breakpointSize)]: {
       bottom: 10,
       width: 'calc(97% - 200px)',
     },
-    // backgroundColor: 'white'
   },
 }));
 

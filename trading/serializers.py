@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Athlete, Club, Entity, Order, Asset, Share, Trade, Race, Result, Dividend
+from .models import Athlete, Club, Entity, Order, Asset, Share, Trade, Race, Result, Dividend, Auction, Bid
 from .exceptions import TradingException
 import logging
 
@@ -110,19 +110,11 @@ class OrderSerializer(serializers.ModelSerializer):
         read_only_fields = ("status", "unfilled_volume")
 
     def create(self, validated_data):
-        # LOGGER.info("OrderSerializer create: " + str(validated_data))
-
         validated_data["athlete"] = validated_data["athlete_id"]
         validated_data.pop("athlete_id", None)
         user = self.user
-        # user = serializers.CurrentUserDefault()
         validated_data["entity"] = user.entity
-        # validated_data["entity"] = validated_data["entity_id"]
-        # validated_data.pop("entity_id", None)
-
         return super().create(validated_data)
-
-        # return self.save_with_fields_filled(validated_data)
 
 
 class RaceSerializer(serializers.ModelSerializer):
@@ -207,3 +199,58 @@ class DividendSerializer(serializers.ModelSerializer):
             "dividend_per_share",
             "reverted",
         )
+
+class AuctionSerializer(serializers.ModelSerializer):
+    bank = EntitySerializer(many=False, read_only=True)
+
+    class Meta:
+        model = Auction
+        fields = (
+            "pk",
+            "name",
+            "description",
+            "start_date",
+            "end_date",
+            "bank",
+        )
+
+class BidSerializer(serializers.ModelSerializer):
+    # athlete = AthleteSerializer(many=False, read_only=True)
+    bidder = EntitySerializer(many=False, read_only=True)
+    # auction = AuctionSerializer(many=False, read_only=True)
+
+    athlete = serializers.PrimaryKeyRelatedField(
+        queryset=Athlete.objects.all()
+    )
+
+    auction = serializers.PrimaryKeyRelatedField(
+        queryset=Auction.objects.all()
+    )
+
+    class Meta:
+        model = Bid
+        fields = (
+            "pk",
+            "status",
+            "bidder",
+            "auction",
+            "athlete",
+            "volume",
+            "price_per_volume",
+        )
+
+    def __init__(self, *args, **kwargs):
+        if "user" in kwargs:
+            self.user = kwargs.pop('user')
+        super().__init__(*args, **kwargs)
+
+    def create(self, validated_data):
+        user = self.user
+        validated_data["bidder"] = user.entity
+
+        LOGGER.info(validated_data)
+
+        # Delete existing object
+        Bid.objects.all().filter(athlete=validated_data["athlete"], bidder=validated_data["bidder"]).delete()
+
+        return super().create(validated_data)

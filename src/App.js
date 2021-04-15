@@ -9,31 +9,30 @@ import SideNav from './components/SideNav';
 import BottomNav from './components/BottomNav';
 import Bank from './components/Bank';
 import About from './components/About';
+import Auction from './components/Auction';
 import {Route, Switch, BrowserRouter} from 'react-router-dom';
 import {makeStyles} from '@material-ui/core/styles';
-
-const drawerWidth = 200;
-
+import {drawerWidth, breakpointSize} from "./utils/links";
 
 const useStyles = makeStyles((theme) => ({
   root: {
     display: 'flex',
   },
   drawer: {
-    [theme.breakpoints.up('sm')]: {
+    [theme.breakpoints.up(breakpointSize)]: {
       width: drawerWidth,
       flexShrink: 0,
     },
   },
   appBar: {
     marginLeft: drawerWidth,
-    [theme.breakpoints.up('sm')]: {
+    [theme.breakpoints.up(breakpointSize)]: {
       width: `calc(100% - ${drawerWidth}px)`,
     },
   },
   menuButton: {
     marginRight: theme.spacing(2),
-    [theme.breakpoints.up('sm')]: {
+    [theme.breakpoints.up(breakpointSize)]: {
       display: 'none',
     },
   },
@@ -46,7 +45,8 @@ const useStyles = makeStyles((theme) => ({
     padding: theme.spacing(1),
     marginTop: 70,
     marginBottom: 50,
-    [theme.breakpoints.up('sm')]: {
+    marginLeft: 0,
+    [theme.breakpoints.up(breakpointSize)]: {
       marginLeft: drawerWidth,
     },
   },
@@ -74,6 +74,7 @@ function App(props) {
             <Route path="/Races" component={Races} />
             <Route path="/About" component={About} />
             <Route path="/Bank" component={Bank} />
+            <Route path="/Auction" component={Auction} />
           </Switch>
 
         </main>

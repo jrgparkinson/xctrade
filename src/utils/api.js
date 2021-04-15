@@ -41,6 +41,9 @@ class Api {
   getProfile() {
     return this.getAxios().get(API_URL + 'profile/');
   }
+  saveProfile(data) {
+    return this.getAxios().put(API_URL + 'profile/', data);
+  }
   getDividends() {
     return this.getAxios().get(API_URL + 'dividends/');
   }
@@ -55,6 +58,18 @@ class Api {
   }
   getOrders() {
     return this.getAxios().get(API_URL + 'orders/');
+  }
+  getAuction() {
+    return this.getAxios().get(API_URL + 'auction/');
+  }
+  getAuctionShares() {
+    return this.getAxios().get(API_URL + 'auction_shares/');
+  }
+  getBids(auction_id) {
+    return this.getAxios().get(API_URL + 'bids/' + auction_id + '/');
+  }
+  postBids(auction_id, data) {
+    return this.getAxios().post(API_URL + 'bids/' + auction_id + '/', data);
   }
   getOrdersForAthlete(athleteId) {
     return this.getAxios().get(API_URL + 'orders/?athlete_id=' + athleteId);

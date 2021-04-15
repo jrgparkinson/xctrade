@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Entity, Race, Result, Athlete, Club
+from .models import Entity, Race, Result, Athlete, Club, Auction
 from .exceptions import TradingException
 from django.contrib import messages
 from import_export.admin import (
@@ -21,6 +21,7 @@ from django.db.models import Q
 
 
 admin.site.register(Entity)
+admin.site.register(Auction)
 # admin.site.register(Race)
 # admin.site.register(Result)
 # admin.site.register(Athlete)

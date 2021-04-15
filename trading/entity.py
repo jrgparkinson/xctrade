@@ -123,6 +123,12 @@ class Entity(models.Model):
             # LOGGER.info(f"Bank offer: {athlete.name} ({vol}): None")
             return None
 
+    def __repr__(self):
+        return self.name
+
+    def __str__(self):
+        return self.name
+
 
 def get_cowley_club_bank():
     bank_user, created = User.objects.get_or_create(username="cowley_club_bank")

@@ -35,6 +35,7 @@ def pay_dividend(sender, instance, created, **kwargs):
 #     if created:
 #         instance.do_trade()
 #         instance.save()
+
 @receiver(pre_save, sender=Trade)
 def execute_trade(sender, instance, **kwargs):
     """ Pay execute trade upon creation """

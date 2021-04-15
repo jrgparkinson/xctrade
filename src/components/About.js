@@ -23,6 +23,8 @@ class About extends Component {
       the player with the most money wins. </p>
 
       <p>For more details, check out (and feel free to contribute to) the <a href="https://github.com/jrgparkinson/xctrade/wiki" target="_blank" rel="noreferrer">wiki page.</a></p>
+
+      <p><b>Found a bug or have an idea for an improvement?</b> <a href="https://github.com/jrgparkinson/xctrade/issues" target="_blank" rel="noreferrer">Please add it here</a></p>
       </CardContent>
       </Card>
       </Container>

@@ -3,6 +3,8 @@
 For details of how the app works, see [https://github.com/jrgparkinson/xctrade/wiki](the wiki)
 
 # Developer instructions
+Please get involved if you have an idea to improve the app! Simply fork this repository then submit a pull request with your change. See below for more details of how the app works...
+
 This app consist of a python backend (using [https://www.djangoproject.com/](Django)) and a JS front end ([https://reactjs.org/](ReactJS)). The design is based on [https://material-ui.com/](Material).
 
 In production, the JS front end is compiled and minified, then served from the Django static files path.

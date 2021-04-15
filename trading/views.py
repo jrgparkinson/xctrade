@@ -145,26 +145,26 @@ def profile(request):
             user.entity.name = request.data["name"]
         else:
             return Response(
-        "Only profile update allowed is name change", status=status.HTTP_400_BAD_REQUEST
-    ) 
+                "Only profile update allowed is name change",
+                status=status.HTTP_400_BAD_REQUEST,
+            )
         user.entity.save()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
-    return Response(
-        "Bad request", status=status.HTTP_400_BAD_REQUEST
-    )
+    return Response("Bad request", status=status.HTTP_400_BAD_REQUEST)
+
 
 @api_view(["GET"])
 def auction_shares(request):
     auction = Auction.get_active_auction()
 
     if not auction:
-        return Response(
-        "No current auction found", status=status.HTTP_404_NOT_FOUND
-    )
+        return Response("No current auction found", status=status.HTTP_404_NOT_FOUND)
 
-    serializer = ShareSerializer(auction.available_shares(), context={"request": request}, many=True)
-    return Response(serializer.data) 
+    serializer = ShareSerializer(
+        auction.available_shares(), context={"request": request}, many=True
+    )
+    return Response(serializer.data)
 
 
 @api_view(["GET"])
@@ -172,9 +172,7 @@ def active_auction(request):
     auction = Auction.get_active_auction()
 
     if not auction:
-        return Response(
-        "No current auction found", status=status.HTTP_404_NOT_FOUND
-    )
+        return Response("No current auction found", status=status.HTTP_404_NOT_FOUND)
 
     serializer = AuctionSerializer(auction, context={"request": request}, many=False)
     return Response(serializer.data)
@@ -185,7 +183,9 @@ def active_auction(request):
 @permission_classes([IsAuthenticated])
 def bids_list(request, auction_pk):
     if request.method == "GET":
-        bids = Bid.objects.all().filter(auction__pk=auction_pk, bidder=request.user.entity)
+        bids = Bid.objects.all().filter(
+            auction__pk=auction_pk, bidder=request.user.entity
+        )
         # LOGGER.info("Bids: %s" % bids)
         serializer = BidSerializer(bids, context={"request": request}, many=True)
         return Response(serializer.data)
@@ -202,7 +202,6 @@ def bids_list(request, auction_pk):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     return Response(status=status.HTTP_400_BAD_REQUEST)
-    
 
 
 @api_view(["GET"])
@@ -251,7 +250,9 @@ def orders_list(request):
         user = request.user
         data = []
         if user.is_authenticated:
-            data = Order.objects.all().filter(entity=user.entity) # , status=Order.OPEN)
+            data = Order.objects.all().filter(
+                entity=user.entity
+            )  # , status=Order.OPEN)
 
             if "athlete_id" in request.query_params:
                 data = data.filter(athlete__id=request.query_params["athlete_id"])
@@ -320,13 +321,12 @@ def orders_detail(request, pk):
     )
 
 
-
-
 @api_view(["GET"])
 def races_list(request):
     data = Race.objects.all()
     serializer = RaceSerializer(data, context={"request": request}, many=True)
     return Response(serializer.data)
+
 
 @api_view(["GET"])
 def results_list(request):
@@ -334,6 +334,7 @@ def results_list(request):
     data = Result.objects.all().filter(athlete__pk=athlete_pk)
     serializer = ResultSerializer(data, context={"request": request}, many=True)
     return Response(serializer.data)
+
 
 @api_view(["GET"])
 @authentication_classes([TokenAuthentication])
@@ -343,6 +344,7 @@ def dividends_list(request):
     data = Dividend.objects.all().filter(entity=user.entity, reverted=False)
     serializer = DividendSerializer(data, context={"request": request}, many=True)
     return Response(serializer.data)
+
 
 @api_view(["GET"])
 def races_detail(request, pk):

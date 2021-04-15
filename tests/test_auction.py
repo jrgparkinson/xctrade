@@ -145,7 +145,6 @@ class DividendTests(APITestCase):
             ],
         )
 
-
     def test_auction_settled(self):
         """ Test settling an auction """
         auction = Auction.get_active_auction()
@@ -162,16 +161,52 @@ class DividendTests(APITestCase):
         # Bank has 2 shares in every athlete, set up some bids
 
         # player a should get the shares luke cotter
-        Bid(athlete=athlete_cotter, bidder=player_jp, volume=3, price_per_volume=2.0, auction=auction).save()
-        Bid(athlete=athlete_cotter, bidder=player_lc, volume=2, price_per_volume=1.9, auction=auction).save()
+        Bid(
+            athlete=athlete_cotter,
+            bidder=player_jp,
+            volume=3,
+            price_per_volume=2.0,
+            auction=auction,
+        ).save()
+        Bid(
+            athlete=athlete_cotter,
+            bidder=player_lc,
+            volume=2,
+            price_per_volume=1.9,
+            auction=auction,
+        ).save()
 
         # player a should get all 1.5 shares, b should get 0.5 shares
-        Bid(athlete=athlete_parkinson, bidder=player_jp, volume=1.5, price_per_volume=1.5, auction=auction).save()
-        Bid(athlete=athlete_parkinson, bidder=player_lc, volume=2, price_per_volume=1.4, auction=auction).save()
+        Bid(
+            athlete=athlete_parkinson,
+            bidder=player_jp,
+            volume=1.5,
+            price_per_volume=1.5,
+            auction=auction,
+        ).save()
+        Bid(
+            athlete=athlete_parkinson,
+            bidder=player_lc,
+            volume=2,
+            price_per_volume=1.4,
+            auction=auction,
+        ).save()
 
         # Should both get 1 share each
-        Bid(athlete=athlete_weatherseed, bidder=player_jp, volume=1, price_per_volume=1.0, auction=auction).save()
-        Bid(athlete=athlete_weatherseed, bidder=player_lc, volume=1, price_per_volume=0.9, auction=auction).save()
+        Bid(
+            athlete=athlete_weatherseed,
+            bidder=player_jp,
+            volume=1,
+            price_per_volume=1.0,
+            auction=auction,
+        ).save()
+        Bid(
+            athlete=athlete_weatherseed,
+            bidder=player_lc,
+            volume=1,
+            price_per_volume=0.9,
+            auction=auction,
+        ).save()
 
         # Settle auction
         self.assertEqual(len(Trade.objects.all()), 0)
@@ -194,5 +229,11 @@ class DividendTests(APITestCase):
         Share.objects.get(athlete=athlete_weatherseed, owner=player_lc, volume=1)
 
         # Check capital
-        self.assertEqual(float(Entity.objects.get(name="jparkinson").capital), 1000.0-(4 + 1.5*1.5 + 1))
-        self.assertEqual(float(Entity.objects.get(name="lcotter").capital), 1000.0-(0.5*1.4 + 0.9))
+        self.assertEqual(
+            float(Entity.objects.get(name="jparkinson").capital),
+            1000.0 - (4 + 1.5 * 1.5 + 1),
+        )
+        self.assertEqual(
+            float(Entity.objects.get(name="lcotter").capital),
+            1000.0 - (0.5 * 1.4 + 0.9),
+        )

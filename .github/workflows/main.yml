@@ -39,7 +39,8 @@ jobs:
     - name: Run tests
       env:
         DJANGO_SECRET_KEY: ${{secrets.DJANGO_SECRET_KEY}}
-      run: python manage.py test
+      # run: python manage.py 
+      run: pytest
 
     - name: Check for deployment
       env:

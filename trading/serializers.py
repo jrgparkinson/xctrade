@@ -1,5 +1,18 @@
 from rest_framework import serializers
-from .models import Athlete, Club, Entity, Order, Asset, Share, Trade, Race, Result, Dividend, Auction, Bid
+from .models import (
+    Athlete,
+    Club,
+    Entity,
+    Order,
+    Asset,
+    Share,
+    Trade,
+    Race,
+    Result,
+    Dividend,
+    Auction,
+    Bid,
+)
 from .exceptions import TradingException
 import logging
 
@@ -185,6 +198,7 @@ class RaceDetailSerializer(serializers.ModelSerializer):
             "has_results",
         )
 
+
 class DividendSerializer(serializers.ModelSerializer):
     result = ResultSerializer(many=False, read_only=True)
     entity = EntitySerializer(many=False, read_only=True)
@@ -200,6 +214,7 @@ class DividendSerializer(serializers.ModelSerializer):
             "reverted",
         )
 
+
 class AuctionSerializer(serializers.ModelSerializer):
     bank = EntitySerializer(many=False, read_only=True)
 
@@ -214,18 +229,15 @@ class AuctionSerializer(serializers.ModelSerializer):
             "bank",
         )
 
+
 class BidSerializer(serializers.ModelSerializer):
     # athlete = AthleteSerializer(many=False, read_only=True)
     bidder = EntitySerializer(many=False, read_only=True)
     # auction = AuctionSerializer(many=False, read_only=True)
 
-    athlete = serializers.PrimaryKeyRelatedField(
-        queryset=Athlete.objects.all()
-    )
+    athlete = serializers.PrimaryKeyRelatedField(queryset=Athlete.objects.all())
 
-    auction = serializers.PrimaryKeyRelatedField(
-        queryset=Auction.objects.all()
-    )
+    auction = serializers.PrimaryKeyRelatedField(queryset=Auction.objects.all())
 
     class Meta:
         model = Bid
@@ -241,7 +253,7 @@ class BidSerializer(serializers.ModelSerializer):
 
     def __init__(self, *args, **kwargs):
         if "user" in kwargs:
-            self.user = kwargs.pop('user')
+            self.user = kwargs.pop("user")
         super().__init__(*args, **kwargs)
 
     def create(self, validated_data):
@@ -251,6 +263,8 @@ class BidSerializer(serializers.ModelSerializer):
         LOGGER.info(validated_data)
 
         # Delete existing object
-        Bid.objects.all().filter(athlete=validated_data["athlete"], bidder=validated_data["bidder"]).delete()
+        Bid.objects.all().filter(
+            athlete=validated_data["athlete"], bidder=validated_data["bidder"]
+        ).delete()
 
         return super().create(validated_data)

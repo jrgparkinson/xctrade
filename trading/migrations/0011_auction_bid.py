@@ -7,34 +7,86 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('trading', '0010_entity_is_bank'),
+        ("trading", "0010_entity_is_bank"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Auction',
+            name="Auction",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=100)),
-                ('description', models.TextField()),
-                ('start_date', models.DateTimeField()),
-                ('end_date', models.DateTimeField()),
-                ('bank', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='trading.entity')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=100)),
+                ("description", models.TextField()),
+                ("start_date", models.DateTimeField()),
+                ("end_date", models.DateTimeField()),
+                (
+                    "bank",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, to="trading.entity"
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='Bid',
+            name="Bid",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('status', models.CharField(choices=[('P', 'Pending'), ('A', 'Accepted'), ('R', 'Rejected')], default='P', max_length=1)),
-                ('volume', models.DecimalField(decimal_places=2, max_digits=10)),
-                ('price_per_volume', models.DecimalField(decimal_places=2, max_digits=10)),
-                ('athlete', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='trading.athlete')),
-                ('auction', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='trading.auction')),
-                ('bidder', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='trading_bid_bidder', to='trading.entity')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "status",
+                    models.CharField(
+                        choices=[
+                            ("P", "Pending"),
+                            ("A", "Accepted"),
+                            ("R", "Rejected"),
+                        ],
+                        default="P",
+                        max_length=1,
+                    ),
+                ),
+                ("volume", models.DecimalField(decimal_places=2, max_digits=10)),
+                (
+                    "price_per_volume",
+                    models.DecimalField(decimal_places=2, max_digits=10),
+                ),
+                (
+                    "athlete",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="trading.athlete",
+                    ),
+                ),
+                (
+                    "auction",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="trading.auction",
+                    ),
+                ),
+                (
+                    "bidder",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="trading_bid_bidder",
+                        to="trading.entity",
+                    ),
+                ),
             ],
-            options={
-                'unique_together': {('bidder', 'athlete')},
-            },
+            options={"unique_together": {("bidder", "athlete")},},
         ),
     ]

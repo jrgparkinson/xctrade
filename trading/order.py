@@ -44,6 +44,7 @@ class Trade(models.Model):
 
     def __str__(self):
         return f"Trade: {self.athlete.name} ({self.volume}) from {self.seller.name} to {self.buyer.name} at {self.unit_price}/share"
+
     def __repr__(self):
         return self.__str__()
 

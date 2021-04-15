@@ -27,3 +27,4 @@ psycopg2-binary
 dj-database-url
 django-import-export
 bs4
+pytest-django

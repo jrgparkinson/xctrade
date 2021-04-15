@@ -364,7 +364,6 @@ class RaceAdmin(admin.ModelAdmin):
 admin.site.register(Race, RaceAdmin)
 
 
-
 # Auctions
 class AuctionAdmin(admin.ModelAdmin):
     actions = ["settle_bids"]

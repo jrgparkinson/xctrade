@@ -10,6 +10,7 @@ from decimal import Decimal
 from rest_framework.authtoken.models import Token
 from rest_framework.test import APIClient
 import logging
+import pytz
 
 LOGGER = logging.getLogger(__name__)
 

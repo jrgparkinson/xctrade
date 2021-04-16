@@ -1,8 +1,6 @@
 from django.db import models
-from datetime import datetime
 from decimal import Decimal
-import pytz
-from .asset import Asset, Share
+from .asset import Share
 from .entity import Entity
 from .athlete import Athlete
 from .exceptions import InvalidOrderException

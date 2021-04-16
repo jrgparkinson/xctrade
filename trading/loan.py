@@ -9,6 +9,7 @@ from .entity import Entity
 
 LOGGER = logging.getLogger(__name__)
 
+
 class Loan(models.Model):
     """
     One entity may loan another entity some capital, which is repayed at some interest rate
@@ -33,7 +34,9 @@ class Loan(models.Model):
     interest_last_added = models.DateTimeField(null=True)
 
     # Interest rate as a fraction e.g. 0.01 = 1% on the repayment interval
-    interest_rate = models.DecimalField(max_digits=10, decimal_places=2, help_text="Fractional interest rate")
+    interest_rate = models.DecimalField(
+        max_digits=10, decimal_places=2, help_text="Fractional interest rate"
+    )
     interest_interval = models.DurationField(default=timedelta(days=7))
 
     # How much needs to be repayed
@@ -58,15 +61,13 @@ class Loan(models.Model):
         self.lender.transfer_cash_to(self.recipient, self.balance)
         self.lender.save()
         self.recipient.save()
-       
-        # Loan.schedule_accrue_interest(loan.id, repeat=interval.total_seconds(), repeat_until=None)    
 
-    
+        # Loan.schedule_accrue_interest(loan.id, repeat=interval.total_seconds(), repeat_until=None)
+
     # @background(schedule=0)
     # def schedule_accrue_interest(loan_id):
     #     loan = Loan.objects.get(id=loan_id)
     #     loan.accrue_interest()
-
 
     def accrue_interest(self):
 
@@ -74,19 +75,24 @@ class Loan(models.Model):
             return
             # raise Exception("Loan balance = 0, manually delete task")
 
-        prev_interest_time = self.interest_last_added  if self.interest_last_added  else self.created
+        prev_interest_time = (
+            self.interest_last_added if self.interest_last_added else self.created
+        )
         if (datetime.now(pytz.utc) - prev_interest_time) < self.interest_interval:
             return
 
         # interest_ammount = np.round(self.interest_rate * self.balance, 2)
         interest_ammount = self.interest_rate * self.balance
         LOGGER.info(
-            "Accrue interest {} from {} to {}".format(
-                interest_ammount, self.recipient, self.lender
-            )
+            "Accrue interest %s from %s to %s",
+            interest_ammount,
+            self.recipient,
+            self.lender,
         )
         self.balance = self.balance + interest_ammount
-        self.interest_last_added = datetime.now(pytz.utc).replace(hour=0, minute=0, second=0, microsecond=0)
+        self.interest_last_added = datetime.now(pytz.utc).replace(
+            hour=0, minute=0, second=0, microsecond=0
+        )
         self.save()
 
     def repay_loan(self, ammount):
@@ -105,7 +111,7 @@ class Loan(models.Model):
 
 
 @receiver(pre_save, sender=Loan)
-def create_loan(sender, instance, **kwargs):
+def create_loan(sender, instance, **kwargs):  # pylint: disable=W0613
     """ Pay execute trade upon creation """
     if instance.pk is None:
         instance.create_loan()

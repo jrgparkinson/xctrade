@@ -16,8 +16,23 @@ from rest_framework.authtoken.models import Token
 from rest_framework.permissions import AllowAny
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
-from .models import Athlete, Order, Share, Dividend, Auction, Bid, Loan
-from .serializers import *
+from .models import Athlete, Order, Share, Dividend, Auction, Bid, Loan, Trade, Race, Result, Entity
+from .serializers import (
+    EntitySerializer,
+    TradeSimpleSerializer,
+    RaceSerializer,
+    ResultSerializer,
+    RaceDetailSerializer,
+    TradeSerializer,
+    AthleteSerializer,
+    OrderSerializer,
+    ShareSerializer,
+    DividendSerializer,
+    AuctionSerializer,
+    BidSerializer,
+    LoanSerializer,
+)
+
 
 LOGGER = logging.getLogger(__name__)
 
@@ -33,7 +48,7 @@ class SocialSerializer(serializers.Serializer):
 @api_view(http_method_names=["POST"])
 @permission_classes([AllowAny])
 @psa()
-def exchange_token(request, backend):
+def exchange_token(request, backend):  # pylint: disable=W0613
     """
     Exchange an OAuth2 access token for one for this site.
     This simply defers the entire OAuth2 process to the front end.
@@ -359,6 +374,7 @@ def loans_list(request):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     return Response(status=status.HTTP_400_BAD_REQUEST)
+
 
 @api_view(["PUT"])
 @authentication_classes([TokenAuthentication])

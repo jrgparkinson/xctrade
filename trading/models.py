@@ -15,39 +15,29 @@ LOGGER = logging.getLogger(__name__)
 
 
 @receiver(post_save, sender=User)
-def create_user_profile(sender, instance, created, **kwargs):
+def create_user_profile(sender, instance, created, **kwargs):  # pylint: disable=W0613
     if created:
         entity = Entity.objects.create(user=instance)
         entity.save()
 
 
 @receiver(post_save, sender=Dividend)
-def pay_dividend(sender, instance, created, **kwargs):
+def pay_dividend(sender, instance, created, **kwargs):  # pylint: disable=W0613
     """ Pay dividend object after creating it """
     if created:
         instance.pay()
         instance.save()
 
 
-# @receiver(post_save, sender=Trade)
-# def execute_trade(sender, instance, created, **kwargs):
-#     """ Pay execute trade upon creation """
-#     if created:
-#         instance.do_trade()
-#         instance.save()
-
 @receiver(pre_save, sender=Trade)
-def execute_trade(sender, instance, **kwargs):
+def execute_trade(sender, instance, **kwargs):  # pylint: disable=W0613
     """ Pay execute trade upon creation """
     if instance.pk is None:
         instance.do_trade()
-        # instance.save()
-    # else:
-    #     instance.save()
 
 
 @receiver(post_save, sender=User)
-def save_user_profile(sender, instance, **kwargs):
+def save_user_profile(sender, instance, **kwargs):  # pylint: disable=W0613
     # LOGGER.info("Save user with entity name: %s" % instance.entity.name)
     if instance.entity.name == "" and (
         instance.first_name != "" or instance.last_name != ""
@@ -58,7 +48,7 @@ def save_user_profile(sender, instance, **kwargs):
 
 
 @receiver(post_save, sender=Order)
-def match_order(sender, instance, created, **kwargs):
+def match_order(sender, instance, created, **kwargs): # pylint: disable=W0613
     """ Find matching orders """
     if created:
 

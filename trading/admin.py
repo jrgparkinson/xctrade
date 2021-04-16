@@ -1,23 +1,20 @@
+from django import forms
 from django.contrib import admin
-from .models import Entity, Race, Result, Athlete, Club, Auction
-from .exceptions import TradingException
 from django.contrib import messages
+from django.db.models import Q
 from import_export.admin import (
     ImportExportModelAdmin,
     ImportForm,
     ConfirmImportForm,
-    ImportMixin,
+    # ImportMixin,
 )
 from import_export import resources
 from import_export.fields import Field
 from import_export.widgets import ForeignKeyWidget
-from .import_from_web import lookup_po10, load_po10_results
-from django import forms
-from bs4 import BeautifulSoup
-import re
-import urllib.request
 from import_export.results import RowResult
-from django.db.models import Q
+from .models import Entity, Race, Result, Athlete, Club, Auction
+from .exceptions import TradingException
+from .import_from_web import lookup_po10, load_po10_results
 
 
 admin.site.register(Entity)
@@ -38,7 +35,7 @@ class ResultExists(Exception):
 
 
 class AthleteForeignKeyWidget(ForeignKeyWidget):
-    def get_queryset(self, value, row):
+    def get_queryset(self, value, row, *args, **kwargs):
         try:
             print("Try and get athlete")
             a = self.model.objects.filter(name=row["athlete"],)
@@ -74,7 +71,7 @@ Jamie Parkinson,10,00:30:00
         print(dataset)
 
     def __init__(self, request=None):
-        super()
+        super().__init__()
         self.request = request
 
     def get_field_names(self):
@@ -104,7 +101,7 @@ Jamie Parkinson,10,00:30:00
 
         return import_result
 
-    def before_import_row(self, row, **kwargs):
+    def before_import_row(self, row, row_number=None, **kwargs):
 
         print("before row import")
 
@@ -118,12 +115,12 @@ Jamie Parkinson,10,00:30:00
             # It means that we got to a point of importing data without
             # contract context, and we don't want to continue.
             try:
-                sector = self.request.session["import_context_race"]
+                _ = self.request.session["import_context_race"]
             except KeyError as e:
                 raise Exception(
                     "Race context failure on row import, "
                     + f"check resources.py for more info: {e}"
-                )
+                ) from e
         row["race"] = race
 
     def get_instance(self, instance_loader, row):
@@ -278,9 +275,7 @@ class RaceAdmin(admin.ModelAdmin):
                     continue
 
             except TradingException as e:
-                errors.append(
-                    "{}: Error importing race: {} - {}".format(race, e.title, e.desc)
-                )
+                errors.append("{}: Error importing race: {}".format(race, e.error))
 
             imported_names = []
             skipped_names = []
@@ -374,8 +369,6 @@ class AuctionAdmin(admin.ModelAdmin):
 
     def settle_bids(self, request, queryset):
         for auction in queryset:
-            error = None
-
             try:
                 auction.settle_bids()
             except TradingException as e:

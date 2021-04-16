@@ -1,8 +1,7 @@
-from django.db import models
-from django.contrib.auth.models import User
-from .athlete import Athlete
 import logging
 from decimal import Decimal
+from django.db import models
+from django.contrib.auth.models import User
 from .asset import Share
 from .equations import get_equation
 from .exceptions import (
@@ -65,7 +64,7 @@ class Entity(models.Model):
 
     def get_share(self, athlete):
         # LOGGER.info(Share.objects.all().filter(athlete=athlete,owner=self))
-        share, created = Share.objects.get_or_create(athlete=athlete, owner=self)
+        share, _ = Share.objects.get_or_create(athlete=athlete, owner=self)
         share.save()
         return share
 
@@ -113,8 +112,8 @@ class Entity(models.Model):
             return None
         bank_price_eq = get_equation(f"bank{buy_or_sell}Price")
 
-        # Prepare as floats
-        volume = float(vol)
+        # Prepare as floats for eval
+        volume = float(vol)  # pylint: disable=W0612
         current_unit_price = float(current_unit_price)
         offer_total_price = Decimal(round(eval(bank_price_eq), 2))
 

@@ -5,6 +5,7 @@ from trading.loan import apply_all_interest
 
 class Command(BaseCommand):
     """ Compute interest for loans """
+
     help = "Compute interest for loans"
 
     def handle(self, *args, **kwargs):

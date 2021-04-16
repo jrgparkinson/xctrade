@@ -70,26 +70,17 @@ class Race(models.Model):
                 # dividend_earned = vol_owned * r.dividend
 
                 try:
-                    # bank = cowley_club_bank()
-                    # bank.transfer_cash_to(
-                    #     dividend_earned, i, reason="Dividend payment {}".format(r.id)
-                    # )
                     Dividend(
                         result=r,
                         volume=vol_owned,
                         entity=i,
                         dividend_per_share=r.dividend,
                     ).save()
-                    # i.capital += dividend_earned
-
-                    # TODO: create a record of this dividend payment
-
                     r.dividend_distributed = True
                     r.save()
-                    # i.save()
 
                 except TradingException as e:
-                    return "{}: {}".format(e.title, e.desc)
+                    return str(e)
 
         return None
 
@@ -134,20 +125,15 @@ def compute_dividends(race: Race):
 
     eq = get_equation("dividend")
 
-    d_min = race.min_dividend
-    d_max = race.max_dividend
-    num_comp = race.num_competitors
+    d_min = race.min_dividend  # pylint: disable=W0612
+    d_max = race.max_dividend  # pylint: disable=W0612
+    num_comp = race.num_competitors  # pylint: disable=W0612
 
     for r in results:
-        position = r.position
+        position = r.position  # pylint: disable=W0612
 
         # Using eval because this is trusted (not user input)
         r.dividend = eval(eq)
-        # LOGGER.info(r.dividend)
-        # scaled_position = (
-        #     race.num_competitors - (r.position - 1)
-        # ) / race.num_competitors
-        # r.dividend =  race.min_dividend + (race.max_dividend - race.min_dividend) * pow(scaled_position, 2),
 
         r.save()
 

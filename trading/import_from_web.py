@@ -1,16 +1,16 @@
-import csv
-
-from bs4 import BeautifulSoup
-import re
-import urllib.request
-from datetime import timedelta
-
 """
 Utilites for scraping data from the web
 """
+import re
+import logging
+import urllib.request
+from datetime import timedelta
+from bs4 import BeautifulSoup
+
+LOGGER = logging.getLogger(__name__)
 
 
-def lookup_po10(name, club):
+def lookup_po10(name, _):
 
     names = name.split(" ")
     if not names:
@@ -52,14 +52,14 @@ def lookup_po10(name, club):
                             continue
 
                         results.append({"url": url})
-                        # print(url)
+                        # LOGGER.debug(url)
 
     except Exception as error:
-        print("An exception was thrown accessing " + po10url + "!")
-        print(str(error))
+        LOGGER.debug("An exception was thrown accessing " + po10url + "!")
+        LOGGER.debug(str(error))
         return ""
 
-    print(results)
+    LOGGER.debug(results)
     if len(results) == 1:
         return "https://www.thepowerof10.info/athletes/" + results[0]["url"]
 
@@ -112,7 +112,7 @@ class ParsedResult:
                     minutes = int(m.groups()[1])
                     seconds = int(m.groups()[2])
 
-        # print("{}, {}, {}, {}".format(hours, minutes, seconds, millis))
+        # LOGGER.debug("{}, {}, {}, {}".format(hours, minutes, seconds, millis))
         td = timedelta(
             hours=hours, minutes=minutes, seconds=seconds, milliseconds=millis
         )
@@ -120,7 +120,7 @@ class ParsedResult:
         return td
 
 
-def load_opentrack_results(url):
+def load_opentrack_results(_):
     pass
 
 
@@ -145,17 +145,17 @@ def load_po10_results_page(url):
                     bgcol = row.get("bgcolor")
 
                     if style:
-                        print("Get bg color from {}".format(row["style"]))
+                        LOGGER.debug("Get bg color from {}".format(row["style"]))
                         m = re.match(r"background-color:([a-zA-Z]+)", row["style"])
                         bg_color = m.groups()[0]
 
                     elif bgcol:
-                        print("Get bg color from {}".format(row["bgcolor"]))
+                        LOGGER.debug("Get bg color from {}".format(row["bgcolor"]))
                         bg_color = row["bgcolor"]
 
-                except Exception as e:
-                    print("error parsing row: " + str(row))
-                    print(e)
+                except Exception as error:
+                    LOGGER.debug("error parsing row: " + str(row))
+                    LOGGER.debug(error)
                     continue
 
                 if not ("WhiteSmoke" in bg_color or "Gainsboro" in bg_color):
@@ -163,7 +163,7 @@ def load_po10_results_page(url):
 
                 cols = row.find_all("td")
 
-                # print(cols)
+                # LOGGER.debug(cols)
 
                 pos = cols[0].text.strip()
                 time = cols[2].text.strip()
@@ -174,7 +174,7 @@ def load_po10_results_page(url):
                 )
                 results.append(res)
 
-    # print(results)
+    # LOGGER.debug(results)
     return results
 
 
@@ -193,11 +193,11 @@ def load_po10_results(url):
         results.extend(load_po10_results_page(url))
 
         for link in links:
-            # print(link)
+            # LOGGER.debug(link)
             page_url = "https://www.thepowerof10.info" + link["href"]
             page_url = page_url.replace(" ", "%20")
-            print(page_url)
+            LOGGER.debug(page_url)
             results.extend(load_po10_results_page(page_url))
 
-    print(results)
+    LOGGER.debug(results)
     return results

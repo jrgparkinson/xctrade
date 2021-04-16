@@ -1,10 +1,10 @@
+import logging
 from rest_framework import serializers
 from .models import (
     Athlete,
     Club,
     Entity,
     Order,
-    Asset,
     Share,
     Trade,
     Race,
@@ -15,8 +15,6 @@ from .models import (
     Loan,
 )
 from .entity import get_cowley_club_bank
-from .exceptions import TradingException
-import logging
 
 LOGGER = logging.getLogger(__name__)
 
@@ -123,6 +121,11 @@ class OrderSerializer(serializers.ModelSerializer):
             "status",
         )
         read_only_fields = ("status", "unfilled_volume")
+
+    def __init__(self, *args, **kwargs):
+        if "user" in kwargs:
+            self.user = kwargs.pop("user")
+        super().__init__(*args, **kwargs)
 
     def create(self, validated_data):
         validated_data["athlete"] = validated_data["athlete_id"]
@@ -268,10 +271,10 @@ class BidSerializer(serializers.ModelSerializer):
         return super().create(validated_data)
 
 
-
 class LoanSerializer(serializers.ModelSerializer):
     """ Serializer Loan objects """
-    lender    =  serializers.PrimaryKeyRelatedField(read_only=True)
+
+    lender = serializers.PrimaryKeyRelatedField(read_only=True)
     # recipient = serializers.PrimaryKeyRelatedField(queryset=Entity.objects.all(), read_only=True)
 
     class Meta:

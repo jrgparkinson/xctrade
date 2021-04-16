@@ -10,156 +10,409 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('contenttypes', '0002_remove_content_type_name'),
+        ("contenttypes", "0002_remove_content_type_name"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Asset',
+            name="Asset",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('polymorphic_ctype', models.ForeignKey(editable=False, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='polymorphic_trading.asset_set+', to='contenttypes.contenttype')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "polymorphic_ctype",
+                    models.ForeignKey(
+                        editable=False,
+                        null=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="polymorphic_trading.asset_set+",
+                        to="contenttypes.contenttype",
+                    ),
+                ),
             ],
-            options={
-                'abstract': False,
-                'base_manager_name': 'objects',
-            },
+            options={"abstract": False, "base_manager_name": "objects",},
         ),
         migrations.CreateModel(
-            name='Athlete',
+            name="Athlete",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=100, unique=True)),
-                ('power_of_10', models.URLField()),
-            ],
-        ),
-        migrations.CreateModel(
-            name='Club',
-            fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=100, unique=True)),
-            ],
-        ),
-        migrations.CreateModel(
-            name='Entity',
-            fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('capital', models.DecimalField(decimal_places=2, default=1000, max_digits=10)),
-                ('name', models.CharField(max_length=100)),
-                ('is_bank', models.BooleanField(default=False)),
-                ('user', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
-            ],
-        ),
-        migrations.CreateModel(
-            name='Race',
-            fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=100)),
-                ('time', models.DateTimeField()),
-                ('results_link', models.URLField(blank=True, null=True)),
-                ('event_details_link', models.URLField(blank=True, null=True)),
-                ('max_dividend', models.DecimalField(decimal_places=2, max_digits=10)),
-                ('min_dividend', models.DecimalField(decimal_places=2, default=10.0, max_digits=10)),
-                ('num_competitors', models.IntegerField(blank=True, null=True)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=100, unique=True)),
+                ("power_of_10", models.URLField()),
             ],
         ),
         migrations.CreateModel(
-            name='Trade',
+            name="Club",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('volume', models.DecimalField(decimal_places=2, max_digits=10)),
-                ('unit_price', models.DecimalField(decimal_places=2, max_digits=10)),
-                ('timestamp', models.DateTimeField(auto_now_add=True)),
-                ('athlete', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='trading.athlete')),
-                ('buyer', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='trading_trade_buyer', to='trading.entity')),
-                ('seller', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='trading_trade_seller', to='trading.entity')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=100, unique=True)),
             ],
         ),
         migrations.CreateModel(
-            name='Result',
+            name="Entity",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('position', models.IntegerField()),
-                ('time', models.DurationField(blank=True, null=True)),
-                ('dividend', models.DecimalField(blank=True, decimal_places=2, max_digits=10, null=True)),
-                ('dividend_distributed', models.BooleanField(default=False)),
-                ('athlete', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='trading_result_athlete', to='trading.athlete')),
-                ('race', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='trading.race')),
-            ],
-            options={
-                'unique_together': {('race', 'athlete')},
-            },
-        ),
-        migrations.CreateModel(
-            name='Order',
-            fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('volume', models.DecimalField(decimal_places=2, max_digits=10)),
-                ('unfilled_volume', models.DecimalField(decimal_places=2, max_digits=10)),
-                ('unit_price', models.DecimalField(decimal_places=2, max_digits=10)),
-                ('buy_sell', models.CharField(choices=[('B', 'Buy'), ('S', 'Sell')], default='B', max_length=1)),
-                ('status', models.CharField(choices=[('O', 'Open'), ('F', 'Fulfilled'), ('P', 'Partially filled'), ('C', 'Cancelled')], default='O', max_length=1)),
-                ('created', models.DateTimeField(auto_now_add=True)),
-                ('updated', models.DateTimeField(auto_now=True, null=True)),
-                ('athlete', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='trading.athlete')),
-                ('entity', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='trading.entity')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "capital",
+                    models.DecimalField(decimal_places=2, default=1000, max_digits=10),
+                ),
+                ("name", models.CharField(max_length=100)),
+                ("is_bank", models.BooleanField(default=False)),
+                (
+                    "user",
+                    models.OneToOneField(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='Dividend',
+            name="Race",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('volume', models.DecimalField(blank=True, decimal_places=2, max_digits=10, null=True)),
-                ('dividend_per_share', models.DecimalField(blank=True, decimal_places=2, max_digits=10, null=True)),
-                ('reverted', models.BooleanField(default=False)),
-                ('entity', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='trading.entity')),
-                ('result', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='trading_dividend_result', to='trading.result')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=100)),
+                ("time", models.DateTimeField()),
+                ("results_link", models.URLField(blank=True, null=True)),
+                ("event_details_link", models.URLField(blank=True, null=True)),
+                ("max_dividend", models.DecimalField(decimal_places=2, max_digits=10)),
+                (
+                    "min_dividend",
+                    models.DecimalField(decimal_places=2, default=10.0, max_digits=10),
+                ),
+                ("num_competitors", models.IntegerField(blank=True, null=True)),
             ],
         ),
         migrations.CreateModel(
-            name='Auction',
+            name="Trade",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=100)),
-                ('description', models.TextField()),
-                ('start_date', models.DateTimeField()),
-                ('end_date', models.DateTimeField()),
-                ('bank', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='trading.entity')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("volume", models.DecimalField(decimal_places=2, max_digits=10)),
+                ("unit_price", models.DecimalField(decimal_places=2, max_digits=10)),
+                ("timestamp", models.DateTimeField(auto_now_add=True)),
+                (
+                    "athlete",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="trading.athlete",
+                    ),
+                ),
+                (
+                    "buyer",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="trading_trade_buyer",
+                        to="trading.entity",
+                    ),
+                ),
+                (
+                    "seller",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="trading_trade_seller",
+                        to="trading.entity",
+                    ),
+                ),
+            ],
+        ),
+        migrations.CreateModel(
+            name="Result",
+            fields=[
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("position", models.IntegerField()),
+                ("time", models.DurationField(blank=True, null=True)),
+                (
+                    "dividend",
+                    models.DecimalField(
+                        blank=True, decimal_places=2, max_digits=10, null=True
+                    ),
+                ),
+                ("dividend_distributed", models.BooleanField(default=False)),
+                (
+                    "athlete",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="trading_result_athlete",
+                        to="trading.athlete",
+                    ),
+                ),
+                (
+                    "race",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, to="trading.race"
+                    ),
+                ),
+            ],
+            options={"unique_together": {("race", "athlete")},},
+        ),
+        migrations.CreateModel(
+            name="Order",
+            fields=[
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("volume", models.DecimalField(decimal_places=2, max_digits=10)),
+                (
+                    "unfilled_volume",
+                    models.DecimalField(decimal_places=2, max_digits=10),
+                ),
+                ("unit_price", models.DecimalField(decimal_places=2, max_digits=10)),
+                (
+                    "buy_sell",
+                    models.CharField(
+                        choices=[("B", "Buy"), ("S", "Sell")], default="B", max_length=1
+                    ),
+                ),
+                (
+                    "status",
+                    models.CharField(
+                        choices=[
+                            ("O", "Open"),
+                            ("F", "Fulfilled"),
+                            ("P", "Partially filled"),
+                            ("C", "Cancelled"),
+                        ],
+                        default="O",
+                        max_length=1,
+                    ),
+                ),
+                ("created", models.DateTimeField(auto_now_add=True)),
+                ("updated", models.DateTimeField(auto_now=True, null=True)),
+                (
+                    "athlete",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="trading.athlete",
+                    ),
+                ),
+                (
+                    "entity",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, to="trading.entity"
+                    ),
+                ),
+            ],
+        ),
+        migrations.CreateModel(
+            name="Dividend",
+            fields=[
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "volume",
+                    models.DecimalField(
+                        blank=True, decimal_places=2, max_digits=10, null=True
+                    ),
+                ),
+                (
+                    "dividend_per_share",
+                    models.DecimalField(
+                        blank=True, decimal_places=2, max_digits=10, null=True
+                    ),
+                ),
+                ("reverted", models.BooleanField(default=False)),
+                (
+                    "entity",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, to="trading.entity"
+                    ),
+                ),
+                (
+                    "result",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="trading_dividend_result",
+                        to="trading.result",
+                    ),
+                ),
+            ],
+        ),
+        migrations.CreateModel(
+            name="Auction",
+            fields=[
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=100)),
+                ("description", models.TextField()),
+                ("start_date", models.DateTimeField()),
+                ("end_date", models.DateTimeField()),
+                (
+                    "bank",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, to="trading.entity"
+                    ),
+                ),
             ],
         ),
         migrations.AddField(
-            model_name='athlete',
-            name='club',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='trading.club'),
+            model_name="athlete",
+            name="club",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE, to="trading.club"
+            ),
         ),
         migrations.CreateModel(
-            name='Share',
+            name="Share",
             fields=[
-                ('asset_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='trading.asset')),
-                ('volume', models.DecimalField(decimal_places=2, default='0.0', max_digits=10)),
-                ('athlete', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='trading.athlete')),
-                ('owner', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='trading.entity')),
+                (
+                    "asset_ptr",
+                    models.OneToOneField(
+                        auto_created=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        parent_link=True,
+                        primary_key=True,
+                        serialize=False,
+                        to="trading.asset",
+                    ),
+                ),
+                (
+                    "volume",
+                    models.DecimalField(decimal_places=2, default="0.0", max_digits=10),
+                ),
+                (
+                    "athlete",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="trading.athlete",
+                    ),
+                ),
+                (
+                    "owner",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, to="trading.entity"
+                    ),
+                ),
             ],
-            options={
-                'abstract': False,
-                'base_manager_name': 'objects',
-            },
-            bases=('trading.asset',),
+            options={"abstract": False, "base_manager_name": "objects",},
+            bases=("trading.asset",),
         ),
         migrations.CreateModel(
-            name='Bid',
+            name="Bid",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('status', models.CharField(choices=[('P', 'Pending'), ('A', 'Accepted'), ('R', 'Rejected')], default='P', max_length=1)),
-                ('volume', models.DecimalField(decimal_places=2, max_digits=10)),
-                ('price_per_volume', models.DecimalField(decimal_places=2, max_digits=10)),
-                ('athlete', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='trading.athlete')),
-                ('auction', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='trading.auction')),
-                ('bidder', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='trading_bid_bidder', to='trading.entity')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "status",
+                    models.CharField(
+                        choices=[
+                            ("P", "Pending"),
+                            ("A", "Accepted"),
+                            ("R", "Rejected"),
+                        ],
+                        default="P",
+                        max_length=1,
+                    ),
+                ),
+                ("volume", models.DecimalField(decimal_places=2, max_digits=10)),
+                (
+                    "price_per_volume",
+                    models.DecimalField(decimal_places=2, max_digits=10),
+                ),
+                (
+                    "athlete",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="trading.athlete",
+                    ),
+                ),
+                (
+                    "auction",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="trading.auction",
+                    ),
+                ),
+                (
+                    "bidder",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="trading_bid_bidder",
+                        to="trading.entity",
+                    ),
+                ),
             ],
-            options={
-                'unique_together': {('bidder', 'athlete')},
-            },
+            options={"unique_together": {("bidder", "athlete")},},
         ),
     ]

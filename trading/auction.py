@@ -1,14 +1,15 @@
+import logging
+import pytz
 from datetime import datetime
 from django.db import models
 from django.db.models import Q
-import logging
 from rest_framework.exceptions import APIException
 from .entity import Entity
 from .athlete import Athlete
 from .asset import Share
 from .exceptions import TradingException
 from .order import Trade
-import pytz
+
 
 LOGGER = logging.getLogger(__name__)
 
@@ -34,7 +35,7 @@ class Auction(models.Model):
     def available_shares(self):
         """ Shares available in this auction """
         shares = Share.objects.all().filter(owner=self.bank)
-        LOGGER.info("Bank shares: %s" % shares)
+        LOGGER.info("Bank shares: %s", shares)
         return shares
 
     @staticmethod
@@ -44,7 +45,7 @@ class Auction(models.Model):
             Q(start_date__lte=now) & Q(end_date__gte=now)
         )
 
-        LOGGER.info("Auctions: %s" % auctions)
+        LOGGER.info("Auctions: %s", auctions)
 
         if len(auctions) > 1:
             raise MultipleCurrentAuctionsError

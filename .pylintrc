@@ -1,2 +1,3 @@
 [master]
 load-plugins=pylint_django
+disable=R,C,W1203,W0123,W1202,W1201

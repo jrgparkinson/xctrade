@@ -1,12 +1,14 @@
-from django.db import models
-from django.apps import apps
+import pytz
 from decimal import Decimal
 from datetime import datetime, timedelta
+from django.db import models
+from django.apps import apps
 from django.db.models import Q
-import pytz
 
 
 class Club(models.Model):
+    """ Club model """
+
     name = models.CharField(max_length=100, unique=True)
 
     def __str__(self):
@@ -63,8 +65,8 @@ class Athlete(models.Model):
             if len(recent_trades) == 1:
                 return recent_trades[0].unit_price
             else:
-                NUM_TRADES = 2  # consider N most recent trades
-                trades_to_consider = recent_trades[:NUM_TRADES]
+                num_trades = 2  # consider N most recent trades
+                trades_to_consider = recent_trades[:num_trades]
                 total_vol = Decimal(0)
                 total_vol_price = Decimal(0)
                 for t in trades_to_consider:
@@ -80,7 +82,6 @@ class Athlete(models.Model):
     def weekly_volume(self):
         """ Sum volume of all trades for athlete in past week"""
         Trade = apps.get_model("trading.Trade")
-
         one_week_ago = datetime.now(pytz.utc) - timedelta(weeks=1)
         recent_trades = Trade.objects.all().filter(
             Q(athlete=self) & Q(timestamp__gte=one_week_ago)

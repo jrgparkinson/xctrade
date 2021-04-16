@@ -160,3 +160,4 @@ yarn-debug.log*
 yarn-error.log*
 
 *secrets.py
+pylint.txt

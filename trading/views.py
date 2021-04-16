@@ -1,6 +1,7 @@
 import logging
 from requests.exceptions import HTTPError
 from django.conf import settings
+from decimal import Decimal
 from django.db.models import Q
 from social_django.utils import psa
 from rest_framework.response import Response
@@ -15,7 +16,7 @@ from rest_framework.authtoken.models import Token
 from rest_framework.permissions import AllowAny
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
-from .models import Athlete, Order, Share, Dividend, Auction, Bid
+from .models import Athlete, Order, Share, Dividend, Auction, Bid, Loan
 from .serializers import *
 
 LOGGER = logging.getLogger(__name__)
@@ -337,3 +338,44 @@ def races_detail(request, pk):
     race = Race.objects.get(pk=pk)
     serializer = RaceDetailSerializer(race, context={"request": request}, many=False)
     return Response(serializer.data)
+
+
+@api_view(["GET", "POST"])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
+def loans_list(request):
+    if request.method == "GET":
+        data = Loan.objects.all().filter(recipient=request.user.entity)
+        serializer = LoanSerializer(data, context={"request": request}, many=True)
+        return Response(serializer.data)
+    elif request.method == "POST":
+        LOGGER.info(request.data)
+        serializer = LoanSerializer(data=request.data, many=True, user=request.user)
+        LOGGER.info("Valid serializer? %s " % serializer.is_valid())
+        if serializer.is_valid():
+            serializer.save()
+            return Response(status=status.HTTP_201_CREATED)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    return Response(status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(["PUT"])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
+def loan_detail(request, pk):
+    try:
+        loan = Loan.objects.get(pk=pk)
+    except Loan.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    # the only update allowed by the user is to reduce the capital i.e. make a repayment
+    if "balance" in request.data:
+        repay_ammount = loan.balance - Decimal(request.data["balance"])
+        loan.repay_loan(repay_ammount)
+        loan.save()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+    return Response(
+        "Only loan update allowed is repayment", status=status.HTTP_400_BAD_REQUEST
+    )

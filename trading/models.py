@@ -4,6 +4,7 @@ from .entity import User, Entity, get_cowley_club_bank
 from .asset import Asset, Share
 from .races import Race, Result, Dividend
 from .auction import Auction, Bid
+from .loan import Loan
 from django.db.models.signals import post_save, pre_save
 from django.dispatch import receiver
 from django.db.models import Q

@@ -53,10 +53,15 @@ class Entity(models.Model):
         return False
 
     def transfer_cash_to(self, seller, price):
+        price = Decimal(price)
         if self.capital < price:
             raise InsufficienFundsException
+        LOGGER.info(f"{self.name} transfer {price} to {seller.name}")
         self.capital -= price
         seller.capital += price
+
+        self.save()
+        seller.save()
 
     def get_share(self, athlete):
         # LOGGER.info(Share.objects.all().filter(athlete=athlete,owner=self))

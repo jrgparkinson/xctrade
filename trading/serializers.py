@@ -12,7 +12,9 @@ from .models import (
     Dividend,
     Auction,
     Bid,
+    Loan,
 )
+from .entity import get_cowley_club_bank
 from .exceptions import TradingException
 import logging
 
@@ -231,12 +233,8 @@ class AuctionSerializer(serializers.ModelSerializer):
 
 
 class BidSerializer(serializers.ModelSerializer):
-    # athlete = AthleteSerializer(many=False, read_only=True)
     bidder = EntitySerializer(many=False, read_only=True)
-    # auction = AuctionSerializer(many=False, read_only=True)
-
     athlete = serializers.PrimaryKeyRelatedField(queryset=Athlete.objects.all())
-
     auction = serializers.PrimaryKeyRelatedField(queryset=Auction.objects.all())
 
     class Meta:
@@ -266,5 +264,44 @@ class BidSerializer(serializers.ModelSerializer):
         Bid.objects.all().filter(
             athlete=validated_data["athlete"], bidder=validated_data["bidder"]
         ).delete()
+
+        return super().create(validated_data)
+
+
+
+class LoanSerializer(serializers.ModelSerializer):
+    """ Serializer Loan objects """
+    lender    =  serializers.PrimaryKeyRelatedField(read_only=True)
+    # recipient = serializers.PrimaryKeyRelatedField(queryset=Entity.objects.all(), read_only=True)
+
+    class Meta:
+        model = Loan
+        fields = (
+            "pk",
+            "lender",
+            # "recipient",
+            "created",
+            "balance",
+            "interest_last_added",
+            "interest_interval",
+            "interest_rate",
+        )
+
+    def __init__(self, *args, **kwargs):
+        if "user" in kwargs:
+            self.user = kwargs.pop("user")
+        super().__init__(*args, **kwargs)
+
+    def create(self, validated_data):
+        user = self.user
+        validated_data["recipient"] = user.entity
+        validated_data["lender"] = get_cowley_club_bank()
+
+        LOGGER.info(validated_data)
+
+        # # Delete existing object
+        # Bid.objects.all().filter(
+        #     athlete=validated_data["athlete"], bidder=validated_data["bidder"]
+        # ).delete()
 
         return super().create(validated_data)

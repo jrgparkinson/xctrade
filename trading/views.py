@@ -1,3 +1,8 @@
+import logging
+from requests.exceptions import HTTPError
+from django.conf import settings
+from django.db.models import Q
+from social_django.utils import psa
 from rest_framework.response import Response
 from rest_framework.decorators import (
     api_view,
@@ -5,21 +10,13 @@ from rest_framework.decorators import (
     authentication_classes,
 )
 from rest_framework import status
-
-from .models import Athlete, Order, Share, Dividend, Auction, Bid
-from .serializers import *
-
-from django.conf import settings
 from rest_framework import serializers
 from rest_framework.authtoken.models import Token
 from rest_framework.permissions import AllowAny
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
-from requests.exceptions import HTTPError
-from social_django.utils import psa
-from django.db.models import Q
-import traceback
-import logging
+from .models import Athlete, Order, Share, Dividend, Auction, Bid
+from .serializers import *
 
 LOGGER = logging.getLogger(__name__)
 
@@ -105,22 +102,11 @@ def exchange_token(request, backend):
 @permission_classes([AllowAny])
 @authentication_classes([TokenAuthentication])
 def athletes_list(request):
-    user = request.user
     # LOGGER.info("User: %s" % user)
     if request.method == "GET":
         data = Athlete.objects.all()
-
         serializer = AthleteSerializer(data, context={"request": request}, many=True)
-
         return Response(serializer.data)
-
-    # elif request.method == 'POST':
-    #     serializer = AthleteSerializer(data=request.data)
-    #     if serializer.is_valid():
-    #         serializer.save()
-    #         return Response(status=status.HTTP_201_CREATED)
-
-    #     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(["GET"])

@@ -65,6 +65,15 @@ npm run start
 
 The `npm` command should tell you where it is running the site - head their in your browser.
 
+## Tests
+The python backend code has tests in the `tests` folder. To run from the root directory of this project:
+```bash
+source .venv/bin/activate
+pytest
+```
+
+Please check that the front end app compiles before submitting a pull request (`npm run build`).
+
 ## Useful commands
 
 After changing the Django models

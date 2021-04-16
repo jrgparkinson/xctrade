@@ -16,7 +16,6 @@ LOGGER = logging.getLogger(__name__)
 @receiver(post_save, sender=User)
 def create_user_profile(sender, instance, created, **kwargs):
     if created:
-        user = instance
         entity = Entity.objects.create(user=instance)
         entity.save()
 

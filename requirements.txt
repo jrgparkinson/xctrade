@@ -28,3 +28,5 @@ dj-database-url
 django-import-export
 bs4
 pytest-django
+pylint-django
+pytest-cov

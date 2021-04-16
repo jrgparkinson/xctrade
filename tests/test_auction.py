@@ -109,41 +109,11 @@ class DividendTests(APITestCase):
 
         response = client.get(f"/api/bids/{auction.pk}/")
         LOGGER.info(json.loads(response.content))
-        self.assertEqual(
-            json.loads(response.content),
-            [
-                {
-                    "pk": 2,
-                    "status": "P",
-                    "bidder": {
-                        "pk": 2,
-                        "name": "jparkinson",
-                        "user": 2,
-                        "capital": "1000.00",
-                        "portfolio_value": 1000.0,
-                    },
-                    "auction": 1,
-                    "athlete": 1,
-                    "volume": "2.00",
-                    "price_per_volume": "2.00",
-                },
-                {
-                    "pk": 3,
-                    "status": "P",
-                    "bidder": {
-                        "pk": 2,
-                        "name": "jparkinson",
-                        "user": 2,
-                        "capital": "1000.00",
-                        "portfolio_value": 1000.0,
-                    },
-                    "auction": 1,
-                    "athlete": 2,
-                    "volume": "1.00",
-                    "price_per_volume": "3.00",
-                },
-            ],
-        )
+        bids = json.loads(response.content)
+        self.assertEqual(float(bids[0]["volume"]), 2.0)
+        self.assertEqual(float(bids[0]["price_per_volume"]), 2.0)
+        self.assertEqual(float(bids[1]["volume"]), 1.0)
+        self.assertEqual(float(bids[1]["price_per_volume"]), 3.0)
 
     def test_auction_settled(self):
         """ Test settling an auction """
@@ -231,9 +201,9 @@ class DividendTests(APITestCase):
         # Check capital
         self.assertEqual(
             float(Entity.objects.get(name="jparkinson").capital),
-            1000.0 - (4 + 1.5 * 1.5 + 1),
+            Entity.INITIAL_CAPITAL - (4 + 1.5 * 1.5 + 1),
         )
         self.assertEqual(
             float(Entity.objects.get(name="lcotter").capital),
-            1000.0 - (0.5 * 1.4 + 0.9),
+            Entity.INITIAL_CAPITAL - (0.5 * 1.4 + 0.9),
         )

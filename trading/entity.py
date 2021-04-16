@@ -21,7 +21,7 @@ class NotBankException(TradingException):
 
 
 class Entity(models.Model):
-    INITIAL_CAPITAL = 1000
+    INITIAL_CAPITAL = 100
     capital = models.DecimalField(
         max_digits=10, decimal_places=2, default=INITIAL_CAPITAL
     )

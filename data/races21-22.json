@@ -1,0 +1,100 @@
+[
+    {
+        "name": "Cuppers Men",
+        "time": "2021-10-23T11:30:00.000Z",
+        "event_details_link": "",
+        "max_dividend": 10,
+        "min_dividend": 1
+    },
+    {
+        "name": "Cuppers Women",
+        "time": "2021-10-23T10:30:00.000Z",
+        "event_details_link": "",
+        "max_dividend": 10,
+        "min_dividend": 1
+    },
+    {
+        "name": "MK Senior Men",
+        "time": "2021-11-06T11:30:00.000Z",
+        "event_details_link": "",
+        "max_dividend": 10,
+        "min_dividend": 1
+    },
+    {
+        "name": "MK Senior Women",
+        "time": "2021-11-06T10:30:00.000Z",
+        "event_details_link": "",
+        "max_dividend": 10,
+        "min_dividend": 1
+    },
+    {
+        "name": "II's Varsity Men",
+        "time": "2021-11-28T14:00:00.000Z",
+        "event_details_link": "",
+        "max_dividend": 10,
+        "min_dividend": 1
+    },
+    {
+        "name": "III's Varsity Men",
+        "time": "2021-11-28T14:00:00.000Z",
+        "event_details_link": "",
+        "max_dividend": 10,
+        "min_dividend": 1
+    },
+    {
+        "name": "IV's Varsity Men",
+        "time": "2021-11-28T14:00:00.000Z",
+        "event_details_link": "",
+        "max_dividend": 10,
+        "min_dividend": 1
+    },
+    {
+        "name": "II's Varsity Women",
+        "time": "2021-11-28T14:00:00.000Z",
+        "event_details_link": "",
+        "max_dividend": 10,
+        "min_dividend": 1
+    },
+    {
+        "name": "IIs Varsity Women",
+        "time": "2021-11-28T14:00:00.000Z",
+        "event_details_link": "",
+        "max_dividend": 10,
+        "min_dividend": 1
+    },
+    {
+        "name": "Blues Varsity Men",
+        "time": "2021-12-04T14:00:00.000Z",
+        "event_details_link": "",
+        "max_dividend": 10,
+        "min_dividend": 1
+    },
+    {
+        "name": "Blues Varsity Women",
+        "time": "2021-12-04T13:00:00.000Z",
+        "event_details_link": "",
+        "max_dividend": 10,
+        "min_dividend": 1
+    },
+    {
+        "name": "BUCS",
+        "time": "2022-02-04T13:00:00.000Z",
+        "event_details_link": "",
+        "max_dividend": 10,
+        "min_dividend": 1
+    },
+    {
+        "name": "National XC",
+        "time": "2022-02-27T13:00:00.000Z",
+        "event_details_link": "",
+        "max_dividend": 10,
+        "min_dividend": 1
+    },
+    {
+        "name": "Teddy Hall",
+        "time": "2022-03-12T13:00:00.000Z",
+        "event_details_link": "",
+        "max_dividend": 10,
+        "min_dividend": 1
+    }
+]

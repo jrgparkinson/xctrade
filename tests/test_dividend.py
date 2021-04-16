@@ -90,7 +90,7 @@ class DividendTests(APITestCase):
         # Check whoever owned shares got paid
         jparkinson = Entity.objects.get(name="jparkinson")
         self.assertEqual(
-            Entity.objects.get(name="jparkinson").capital, 1000 + 2 * (100 + 60 + 10)
+            Entity.objects.get(name="jparkinson").capital, Entity.INITIAL_CAPITAL + 2 * (100 + 60 + 10)
         )
 
         # Check dividend objects exist for each user/athlete combo
@@ -101,8 +101,8 @@ class DividendTests(APITestCase):
         for dividend in dividends.filter(entity=jparkinson):
             dividend.revert()
 
-        self.assertEqual(Entity.objects.get(name="jparkinson").capital, 1000)
+        self.assertEqual(Entity.objects.get(name="jparkinson").capital, Entity.INITIAL_CAPITAL)
 
         self.assertEqual(
-            Entity.objects.get(name="jwoods").capital, 1000 + 2 * (100 + 60 + 10)
+            Entity.objects.get(name="jwoods").capital, Entity.INITIAL_CAPITAL + 2 * (100 + 60 + 10)
         )

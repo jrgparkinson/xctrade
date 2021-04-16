@@ -118,11 +118,11 @@ class OrdersTests(APITestCase):
         # Price should be 0.2*(0.95+0.99)/2 = 0.194 = 0.19
         buyer = Entity.objects.get(user__username="jparkinson")
         seller = Entity.objects.get(user__username="lcotter")
-        self.assertEqual(buyer.capital, Decimal("999.81"))
-        self.assertEqual(seller.capital, Decimal("1000.19"))
+        self.assertEqual(float(buyer.capital), Entity.INITIAL_CAPITAL - 0.19)
+        self.assertEqual(float(seller.capital), Entity.INITIAL_CAPITAL + 0.19)
 
         athlete = Athlete.objects.get(name="Joseph Woods")
-        self.assertEqual(athlete.value, Decimal("0.97"))
+        self.assertEqual(float(athlete.value), 0.97)
 
         # Add another sell trade, check it is also actioned
         response = client.post(
@@ -144,8 +144,8 @@ class OrdersTests(APITestCase):
         # Price should be 0.1*(0.9+0.99)/2 = 0.09
         buyer = Entity.objects.get(user__username="jparkinson")
         seller = Entity.objects.get(user__username="lcotter")
-        self.assertEqual(buyer.capital, Decimal("999.72"))
-        self.assertEqual(seller.capital, Decimal("1000.28"))
+        self.assertEqual(float(buyer.capital), Entity.INITIAL_CAPITAL - 0.28)
+        self.assertEqual(float(seller.capital), Entity.INITIAL_CAPITAL + 0.28)
 
         athlete = Athlete.objects.get(name="Joseph Woods")
         self.assertEqual(athlete.value, Decimal("0.96"))

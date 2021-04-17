@@ -13,6 +13,10 @@ import Auction from './components/Auction';
 import {Route, Switch, BrowserRouter} from 'react-router-dom';
 import {makeStyles} from '@material-ui/core/styles';
 import {drawerWidth, breakpointSize} from "./utils/links";
+import useMediaQuery from '@material-ui/core/useMediaQuery';
+import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
+import CssBaseline from '@material-ui/core/CssBaseline';
+
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -56,8 +60,22 @@ const useStyles = makeStyles((theme) => ({
 function App(props) {
   const classes = useStyles();
 
+const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
+
+  const theme = React.useMemo(
+    () =>
+      createMuiTheme({
+        palette: {
+          type: prefersDarkMode ? 'dark' : 'light',
+        },
+      }),
+    [prefersDarkMode],
+  );
+
 
   return (
+<ThemeProvider theme={theme}>
+      <CssBaseline/>
     <Fragment>
       <BrowserRouter>
         <Header />
@@ -81,6 +99,7 @@ function App(props) {
 
       </BrowserRouter>
     </Fragment>
+</ThemeProvider>
   );
 }
 

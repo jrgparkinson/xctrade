@@ -63,58 +63,58 @@ handleCloseSnackbar = (event, reason) => {
     const loans = this.state.loans;
     return (
       <Container>
-          <h1>Cowley Club Bank</h1>
-          
-      <Card style={{marginTop:10}}>
-      <CardContent>
-      <Grid container spacing={2}
-                direction="row"
-                justify="space-between">
-          <Grid item>
-          <h2>Loans</h2>
-                </Grid>
-                <Grid item>
-                <LoanCreate loanInfos={this.state.loanInfo}  onCreate={this.resetState}/>
-                  </Grid>
-                  </Grid>
-                 
-      <Table>
-        <TableHead>
-          <TableRow>
-            <TableCell>Balance</TableCell>
-            <TableCell>Interest Rate</TableCell>
-            <TableCell>Interest period</TableCell>
-            <TableCell></TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {!loans || loans.length <= 0 ? (
-            <TableRow>
-              <TableCell colSpan="6" align="center">
-                <b>None</b>
-              </TableCell>
-            </TableRow>
-          ) : (
-            loans.map(loan => (
-              <LoanItem key={loan.pk} loan={loan} onSubmit={this.handleRepayResponse}/>
-            ))
-          )}
-        </TableBody>
-      </Table>
-      
-      </CardContent>
-      </Card>
+        <h1>Cowley Club Bank</h1>
+
+        <Card style={{ marginTop: 10 }}>
+          <CardContent>
+            <Grid container spacing={2}
+              direction="row"
+              justify="space-between">
+              <Grid item>
+                <h2>Loans</h2>
+              </Grid>
+              <Grid item>
+                <LoanCreate loanInfos={this.state.loanInfo} onCreate={this.resetState} />
+              </Grid>
+            </Grid>
+
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell>Balance</TableCell>
+                  <TableCell>Interest Rate</TableCell>
+                  <TableCell>Interest period</TableCell>
+                  <TableCell></TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {!loans || loans.length <= 0 ? (
+                  <TableRow>
+                    <TableCell colSpan="6" align="center">
+                      <b>None</b>
+                    </TableCell>
+                  </TableRow>
+                ) : (
+                  loans.map(loan => (
+                    <LoanItem key={loan.pk} loan={loan} onSubmit={this.handleRepayResponse} />
+                  ))
+                )}
+              </TableBody>
+            </Table>
+
+          </CardContent>
+        </Card>
 
 
-      
-      <Snackbar open={this.state.snackbarOpen} autoHideDuration={6000} onClose={this.handleCloseSnackbar}>
-        { this.state.error ? <Alert onClose={this.handleCloseSnackbar} severity="error">
-          { this.state.error.length !== undefined ? 'Error: ' +  this.state.error : 'Error processing request.'}
-        </Alert> :
-        <Alert onClose={this.handleCloseSnackbar} severity="success">
-          Request processed successfully
-        </Alert> }
-      </Snackbar>
+
+        <Snackbar open={this.state.snackbarOpen} autoHideDuration={6000} onClose={this.handleCloseSnackbar}>
+          {this.state.error ? <Alert onClose={this.handleCloseSnackbar} severity="error">
+            {this.state.error.length !== undefined ? 'Error: ' + this.state.error : 'Error processing request.'}
+          </Alert> :
+            <Alert onClose={this.handleCloseSnackbar} severity="success">
+              Request processed successfully
+        </Alert>}
+        </Snackbar>
 
       </Container>
     );

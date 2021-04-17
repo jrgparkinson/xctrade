@@ -8,7 +8,7 @@ import TableRow from '@material-ui/core/TableRow';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import API from '../utils/api';
-import {Link} from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import EditIcon from '@material-ui/icons/Edit';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
@@ -37,26 +37,26 @@ class Portfolio extends Component {
   };
 
   editName = (e) => {
-    this.setState({editingName: true});
+    this.setState({ editingName: true });
   }
 
   changeName = (e) => {
     let p = this.state.profile
 
     p.name = e.target.value;
-    this.setState({profile: p});
+    this.setState({ profile: p });
   }
 
   saveProfile = (e) => {
-    API.saveProfile({name: this.state.profile.name}).then(res => this.setState({ profile: this.state.profile }));
-    this.setState({editingName: false});
+    API.saveProfile({ name: this.state.profile.name }).then(res => this.setState({ profile: this.state.profile }));
+    this.setState({ editingName: false });
   }
 
   render() {
     if (!API.isAuthorised()) {
-        return (
-            <Container>Not logged in</Container>
-        );
+      return (
+        <Container>Not logged in</Container>
+      );
     }
 
     console.log(this.state.profile);
@@ -70,106 +70,107 @@ class Portfolio extends Component {
     let sharesValue = Number(profile.portfolio_value - profile.capital).toFixed(2);
     return (
       <Container>
-        {this.state.editingName ? 
-        <div style={{
-          display: "inline-flex",
-          verticalAlign: "middle"}}>
-        <TextField id="name" label="Name" size="small" value={this.state.profile.name} variant="outlined" 
-        onChange={this.changeName}/>
-        <Button variant="contained" color="primary" onClick={this.saveProfile}
-        style={{marginLeft:5}}>
-  Save
+        {this.state.editingName ?
+          <div style={{
+            display: "inline-flex",
+            verticalAlign: "middle"
+          }}>
+            <TextField id="name" label="Name" size="small" value={this.state.profile.name} variant="outlined"
+              onChange={this.changeName} />
+            <Button variant="contained" color="primary" onClick={this.saveProfile}
+              style={{ marginLeft: 5 }}>
+              Save
   </Button></div>
-         :
-          <h1>{profile.name}<EditIcon onClick={this.editName} style={{marginLeft:10}}/></h1>}
-          <Card style={{marginTop:10}}>
-      <CardContent>
-        <h2>Portfolio value: {profile.portfolio_value}</h2>
-        <h4>Cash: {profile.capital} / Shares {sharesValue}</h4>
-        </CardContent>
+          :
+          <h1>{profile.name}<EditIcon onClick={this.editName} style={{ marginLeft: 10 }} /></h1>}
+        <Card style={{ marginTop: 10 }}>
+          <CardContent>
+            <h2>Portfolio value: {profile.portfolio_value}</h2>
+            <h4>Cash: {profile.capital} / Shares {sharesValue}</h4>
+          </CardContent>
         </Card>
-        <Card style={{marginTop:10}}>
-      <CardContent>
-      <h4>Shares owned</h4>
-        <Table>
-        <TableHead>
-          <TableRow>
-            <TableCell>Athlete</TableCell>
-            <TableCell>Volume</TableCell>
-            <TableCell>Value (per share)</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {!shares || shares.length === 0 ? (
-            <TableRow>
-              <TableCell colSpan="6" align="center">
-                None
+        <Card style={{ marginTop: 10 }}>
+          <CardContent>
+            <h4>Shares owned</h4>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell>Athlete</TableCell>
+                  <TableCell>Volume</TableCell>
+                  <TableCell>Value (per share)</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {!shares || shares.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan="6" align="center">
+                      None
               </TableCell>
-            </TableRow>
-          ) : (
-            shares.map((share, index) => (
-              <TableRow key={share.pk}>
-                <TableCell><Link to={'/athletes/' + share.athlete.pk + '/'}>{share.athlete.name}</Link></TableCell>
-                <TableCell>{share.volume}</TableCell>
-                <TableCell>{Number(share.volume*share.athlete.value).toFixed(2)} ({share.athlete.value})</TableCell>
-              </TableRow>
-            ))
-          )}
-        </TableBody>
-      </Table>
-      </CardContent>
-      </Card>
+                  </TableRow>
+                ) : (
+                  shares.map((share, index) => (
+                    <TableRow key={share.pk}>
+                      <TableCell><Link to={'/athletes/' + share.athlete.pk + '/'}>{share.athlete.name}</Link></TableCell>
+                      <TableCell>{share.volume}</TableCell>
+                      <TableCell>{Number(share.volume * share.athlete.value).toFixed(2)} ({share.athlete.value})</TableCell>
+                    </TableRow>
+                  ))
+                )}
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
 
-      <Card style={{marginTop:10}}>
-      <CardContent>
-      <h4>Dividends Received</h4>
-        <Table>
-        <TableHead>
-          <TableRow>
-            <TableCell>Race</TableCell>
-            <TableCell>Athlete</TableCell>
-            <TableCell>Vol</TableCell>
-            <TableCell>Dividend</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {!dividends || dividends.length === 0 ? (
-            <TableRow>
-              <TableCell colSpan="6" align="center">
-                None
+        <Card style={{ marginTop: 10 }}>
+          <CardContent>
+            <h4>Dividends Received</h4>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell>Race</TableCell>
+                  <TableCell>Athlete</TableCell>
+                  <TableCell>Vol</TableCell>
+                  <TableCell>Dividend</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {!dividends || dividends.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan="6" align="center">
+                      None
               </TableCell>
-            </TableRow>
-          ) : (
-            dividends.map((dividend, index) => (
-              <TableRow key={dividend.pk}>
-                <TableCell><Link to={'/athletes/' + dividend.result.race.pk + '/'}>{dividend.result.race.name}</Link></TableCell>
-                <TableCell><Link to={'/athletes/' + dividend.result.athlete.pk + '/'}>{dividend.result.athlete.name}</Link></TableCell>
-                <TableCell>{dividend.volume}</TableCell>
-                <TableCell>{dividend.volume*dividend.dividend_per_share}</TableCell>
-              </TableRow>
-            ))
-          )}
-        </TableBody>
-      </Table>
-      </CardContent>
-      </Card>
+                  </TableRow>
+                ) : (
+                  dividends.map((dividend, index) => (
+                    <TableRow key={dividend.pk}>
+                      <TableCell><Link to={'/athletes/' + dividend.result.race.pk + '/'}>{dividend.result.race.name}</Link></TableCell>
+                      <TableCell><Link to={'/athletes/' + dividend.result.athlete.pk + '/'}>{dividend.result.athlete.name}</Link></TableCell>
+                      <TableCell>{dividend.volume}</TableCell>
+                      <TableCell>{dividend.volume * dividend.dividend_per_share}</TableCell>
+                    </TableRow>
+                  ))
+                )}
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
 
 
-      <Card style={{marginTop:10}}>
-      <CardContent>
-        <h4>API</h4>
-        <p>For the technically minded, you can interact with the underlying API using your personal private API key:</p>
-      
-        <Paper variant="outlined" style={{padding:10, margin:10}}>{apiKey}</Paper>
+        <Card style={{ marginTop: 10 }}>
+          <CardContent>
+            <h4>API</h4>
+            <p>For the technically minded, you can interact with the underlying API using your personal private API key:</p>
 
-      <h6>API documentation: <a href="/redoc/">redoc</a>, <a href="/swagger/">swagger</a></h6>
+            <Paper variant="outlined" style={{ padding: 10, margin: 10 }}>{apiKey}</Paper>
 
-      <h6>Example</h6>
-      <Paper variant="outlined" style={{padding:10, margin:10}}>
-      curl -X GET https://xctrade.herokuapp.com/api/athletes/ -H 'Authorization: Token {apiKey}'
+            <h6>API documentation: <a href="/redoc/">redoc</a>, <a href="/swagger/">swagger</a></h6>
+
+            <h6>Example</h6>
+            <Paper variant="outlined" style={{ padding: 10, margin: 10 }}>
+              curl -X GET https://xctrade.herokuapp.com/api/athletes/ -H 'Authorization: Token {apiKey}'
       </Paper>
-      </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
       </Container>
     );
   }

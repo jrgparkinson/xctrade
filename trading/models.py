@@ -48,7 +48,7 @@ def save_user_profile(sender, instance, **kwargs):  # pylint: disable=W0613
 
 
 @receiver(post_save, sender=Order)
-def match_order(sender, instance, created, **kwargs): # pylint: disable=W0613
+def match_order(sender, instance, created, **kwargs):  # pylint: disable=W0613
     """ Find matching orders """
     if created:
 

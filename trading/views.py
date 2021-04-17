@@ -15,17 +15,28 @@ from rest_framework import serializers
 from rest_framework.authtoken.models import Token
 from rest_framework.permissions import AllowAny
 from rest_framework.authentication import TokenAuthentication
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
-from .models import Athlete, Order, Share, Dividend, Auction, Bid, Loan, Trade, Race, Result, Entity
+from .models import (
+    Athlete,
+    Order,
+    Share,
+    Dividend,
+    Auction,
+    Bid,
+    Loan,
+    Trade,
+    Race,
+    Result,
+    Entity,
+)
 from .serializers import (
     EntitySerializer,
     TradeSimpleSerializer,
     RaceSerializer,
     ResultSerializer,
     RaceDetailSerializer,
-    TradeSerializer,
     AthleteSerializer,
     OrderSerializer,
     ShareSerializer,
@@ -39,10 +50,67 @@ from .serializers import (
 LOGGER = logging.getLogger(__name__)
 
 
-athlete_id_param = openapi.Parameter('athlete_id', openapi.IN_QUERY,
-                                    description="Athlete ID", type=openapi.TYPE_INTEGER)
-# usage: 
-# @swagger_auto_schema(method='get', manual_parameters=[athlete_id_param],  responses={200: RaceDetailSerializer})
+athlete_id_param = openapi.Parameter(
+    "athlete_id", openapi.IN_QUERY, description="Athlete ID", type=openapi.TYPE_INTEGER
+)
+auction_id_param = openapi.Parameter(
+    "auction_id", openapi.IN_QUERY, description="Auction ID", type=openapi.TYPE_INTEGER
+)
+
+create_order_request = openapi.Schema(
+    type=openapi.TYPE_OBJECT,
+    required=["athlete_id", "volume", "unit_price", "buy_sell"],
+    properties={
+        "athlete_id": openapi.Schema(type=openapi.TYPE_INTEGER),
+        "volume": openapi.Schema(type=openapi.TYPE_NUMBER),
+        "unit_price": openapi.Schema(type=openapi.TYPE_NUMBER),
+        "buy_sell": openapi.Schema(type=openapi.TYPE_STRING, enum=("B", "S")),
+    },
+)
+
+order_update_request = openapi.Schema(
+    type=openapi.TYPE_OBJECT,
+    required=["status"],
+    properties={"status": openapi.Schema(type=openapi.TYPE_STRING, enum=("C",)),},
+)
+
+profile_update_request = openapi.Schema(
+    type=openapi.TYPE_OBJECT,
+    required=["name"],
+    properties={"name": openapi.Schema(type=openapi.TYPE_STRING),},
+)
+
+
+loan_create = openapi.Schema(
+    type=openapi.TYPE_OBJECT,
+    required=["balance", "interest_rate"],
+    properties={
+        "balance": openapi.Schema(type=openapi.TYPE_NUMBER),
+        "interest_interval": openapi.Schema(type=openapi.TYPE_STRING),
+        "interest_rate": openapi.Schema(type=openapi.TYPE_NUMBER),
+    },
+)
+loan_update = openapi.Schema(
+    type=openapi.TYPE_OBJECT,
+    required=["balance"],
+    properties={
+        "balance": openapi.Schema(
+            type=openapi.TYPE_NUMBER,
+            description="New balance after repaying some ammount",
+        ),
+    },
+)
+bid_create = openapi.Schema(
+    type=openapi.TYPE_OBJECT,
+    required=["auction", "athlete", "volume", "price_per_volume",],
+    properties={
+        "auction": openapi.Schema(type=openapi.TYPE_INTEGER, description="Auction ID"),
+        "athlete": openapi.Schema(type=openapi.TYPE_INTEGER, description="Athlete ID"),
+        "volume": openapi.Schema(type=openapi.TYPE_NUMBER),
+        "price_per_volume": openapi.Schema(type=openapi.TYPE_NUMBER),
+    },
+)
+
 
 class SocialSerializer(serializers.Serializer):
     """
@@ -52,6 +120,7 @@ class SocialSerializer(serializers.Serializer):
     access_token = serializers.CharField(allow_blank=False, trim_whitespace=True,)
 
 
+@swagger_auto_schema(method="POST", permission_classes=(IsAdminUser,))
 @api_view(http_method_names=["POST"])
 @permission_classes([AllowAny])
 @psa()
@@ -121,9 +190,10 @@ def exchange_token(request, backend):  # pylint: disable=W0613
             )
 
 
+@swagger_auto_schema(method="get", responses={200: AthleteSerializer})
 @api_view(["GET"])
-@permission_classes([AllowAny])
-@authentication_classes([TokenAuthentication])
+# @permission_classes([AllowAny])
+# @authentication_classes([TokenAuthentication])
 def athletes_list(request):
     """ Get a list of all athletes """
     if request.method == "GET":
@@ -132,6 +202,7 @@ def athletes_list(request):
         return Response(serializer.data)
 
 
+@swagger_auto_schema(method="get", responses={200: EntitySerializer})
 @api_view(["GET"])
 def entities_list(request):
     """ Get a list of all entities (players) """
@@ -141,6 +212,15 @@ def entities_list(request):
         return Response(serializer.data)
 
 
+@swagger_auto_schema(
+    method="get", responses={200: EntitySerializer}, security=[{"Token": []}]
+)
+@swagger_auto_schema(
+    operation_description="Update profile",
+    method="PUT",
+    request_body=profile_update_request,
+    security=[{"Token": []}],
+)
 @api_view(["GET", "PUT"])
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])
@@ -165,6 +245,7 @@ def profile(request):
     return Response("Bad request", status=status.HTTP_400_BAD_REQUEST)
 
 
+@swagger_auto_schema(method="get", responses={200: ShareSerializer})
 @api_view(["GET"])
 def auction_shares(request):
     """ Shares available to bid on at an auction """
@@ -179,8 +260,10 @@ def auction_shares(request):
     return Response(serializer.data)
 
 
+@swagger_auto_schema(method="get", responses={200: AuctionSerializer})
 @api_view(["GET"])
 def active_auction(request):
+    """ Retrieve the current auction (if any) """
     auction = Auction.get_active_auction()
 
     if not auction:
@@ -190,22 +273,30 @@ def active_auction(request):
     return Response(serializer.data)
 
 
+@swagger_auto_schema(
+    operation_description="Create bid",
+    method="POST",
+    request_body=bid_create,
+    security=[{"Token": []}],
+)
+@swagger_auto_schema(
+    method="get", responses={200: BidSerializer}, security=[{"Token": []}]
+)
 @api_view(["GET", "POST"])
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])
 def bids_list(request, auction_pk):
+    """ Get or create bids for the authenticated user and given auction """
     if request.method == "GET":
         bids = Bid.objects.all().filter(
             auction__pk=auction_pk, bidder=request.user.entity
         )
-        # LOGGER.info("Bids: %s" % bids)
         serializer = BidSerializer(bids, context={"request": request}, many=True)
         return Response(serializer.data)
     elif request.method == "POST":
         # Save the bids
         LOGGER.info(request.data)
         serializer = BidSerializer(data=request.data, many=True, user=request.user)
-        # serializer.user = request.user
         LOGGER.info("Valid serializer? %s " % serializer.is_valid())
         if serializer.is_valid():
             serializer.save()
@@ -216,10 +307,14 @@ def bids_list(request, auction_pk):
     return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
+@swagger_auto_schema(
+    method="get", responses={200: ShareSerializer}, security=[{"Token": []}]
+)
 @api_view(["GET"])
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])
 def shares_list(request):
+    """ Get shares owner by authenticated user """
     user = request.user
     data = Share.objects.all().filter(owner=user.entity)
     serializer = ShareSerializer(data, context={"request": request}, many=True)
@@ -227,52 +322,62 @@ def shares_list(request):
 
 
 # Need to rethink this end point
-# @swagger_auto_schema(method='get', manual_parameters=[athlete_id_param],  responses={200: RaceDetailSerializer})
+@swagger_auto_schema(
+    method="get",
+    manual_parameters=[athlete_id_param],
+    responses={200: TradeSimpleSerializer},
+)
 @api_view(["GET"])
 def trades_list(request):
+    """ Get trades for an athlete """
     if request.method == "GET":
         data = Trade.objects.all().order_by("timestamp")
 
-        Serializer = TradeSerializer
+        # Serializer = TradeSerializer
 
         if "athlete_id" in request.query_params:
             data = data.filter(athlete__id=request.query_params["athlete_id"])
-            Serializer = TradeSimpleSerializer
 
-        if "entity_id" in request.query_params:
-            data = data.filter(
-                Q(buyer__id=request.query_params["entity_id"])
-                | Q(seller__id=request.query_params["entity_id"])
-            )
+        # if "entity_id" in request.query_params:
+        #     data = data.filter(
+        #         Q(buyer__id=request.query_params["entity_id"])
+        #         | Q(seller__id=request.query_params["entity_id"])
+        #     )
 
-        serializer = Serializer(data, context={"request": request}, many=True)
+        serializer = TradeSimpleSerializer(
+            data, context={"request": request}, many=True
+        )
         return Response(serializer.data)
 
 
+@swagger_auto_schema(
+    operation_description="Get list of orders",
+    method="get",
+    manual_parameters=[athlete_id_param],
+    responses={200: OrderSerializer},
+)
+@swagger_auto_schema(
+    operation_description="Create new order",
+    method="post",
+    request_body=create_order_request,
+    security=[{"Token": []}],
+)
 @api_view(["GET", "POST"])
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])
 def orders_list(request):
-    """
-    post example:
-    {"athlete_id": 7,
-        "volume": "0.99",
-        "unit_price": "0.99",
-        "buy_sell": "B"}
-"""
+    """ Handle orders """
     if request.method == "GET":
         user = request.user
         data = []
         if user.is_authenticated:
-            data = Order.objects.all().filter(
-                entity=user.entity
-            )  # , status=Order.OPEN)
+            data = Order.objects.all().filter(entity=user.entity)
 
             if "athlete_id" in request.query_params:
                 data = data.filter(athlete__id=request.query_params["athlete_id"])
 
-            if "entity_id" in request.query_params:
-                data = data.filter(entity__id=request.query_params["entity_id"])
+            # if "entity_id" in request.query_params:
+            #     data = data.filter(entity__id=request.query_params["entity_id"])
 
         serializer = OrderSerializer(data, context={"request": request}, many=True)
 
@@ -288,6 +393,7 @@ def orders_list(request):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+@swagger_auto_schema(method="get", responses={200: AthleteSerializer})
 @api_view(["GET"])
 def athlete_detail(request, pk):
     """ Get detailed information about an athlete """
@@ -300,6 +406,23 @@ def athlete_detail(request, pk):
     return Response(serializer.data)
 
 
+@swagger_auto_schema(
+    method="get",
+    security=[{"Token": []}],
+    responses={
+        200: openapi.Response(
+            description="Cash and shares for user",
+            schema=openapi.Schema(
+                type=openapi.TYPE_OBJECT,
+                # required=["name"],
+                properties={
+                    "capital": openapi.Schema(type=openapi.TYPE_NUMBER),
+                    "shares_owned": openapi.Schema(type=openapi.TYPE_NUMBER),
+                },
+            ),
+        )
+    },
+)
 @api_view(["GET"])
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])
@@ -317,8 +440,15 @@ def order_prices(request, athlete_pk):
     return Response(data)
 
 
+@swagger_auto_schema(
+    operation_description="Update order",
+    method="PUT",
+    request_body=order_update_request,
+    security=[{"Token": []}],
+)
 @api_view(["PUT"])
 def orders_detail(request, pk):
+    """ Update an order - only allowed operation is to cancel it """
     try:
         order = Order.objects.get(pk=pk)
     except Order.DoesNotExist:
@@ -335,32 +465,47 @@ def orders_detail(request, pk):
     )
 
 
+@swagger_auto_schema(method="get", responses={200: RaceSerializer})
 @api_view(["GET"])
 def races_list(request):
+    """ Retrieve races """
     data = Race.objects.all()
     serializer = RaceSerializer(data, context={"request": request}, many=True)
     return Response(serializer.data)
 
 
+@swagger_auto_schema(
+    method="get",
+    responses={200: ResultSerializer},
+    manual_parameters=[athlete_id_param],
+)
 @api_view(["GET"])
 def results_list(request):
-    athlete_pk = request.query_params["athlete_id"]
-    data = Result.objects.all().filter(athlete__pk=athlete_pk)
+    """ Retrieve results """
+    if "athlete_id" in request.query_params:
+        athlete_pk = request.query_params["athlete_id"]
+        data = Result.objects.all().filter(athlete__pk=athlete_pk)
+    else:
+        data = Result.objects.all()
     serializer = ResultSerializer(data, context={"request": request}, many=True)
     return Response(serializer.data)
 
 
+@swagger_auto_schema(
+    method="get", responses={200: DividendSerializer}, security=[{"Token": []}]
+)
 @api_view(["GET"])
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])
 def dividends_list(request):
+    """ Retrieve dividends for the authenticated user """
     user = request.user
     data = Dividend.objects.all().filter(entity=user.entity, reverted=False)
     serializer = DividendSerializer(data, context={"request": request}, many=True)
     return Response(serializer.data)
 
 
-@swagger_auto_schema(method='get', responses={200: RaceDetailSerializer})
+@swagger_auto_schema(method="get", responses={200: RaceDetailSerializer})
 @api_view(["GET"])
 def races_detail(request, pk):
     """ Get detailed information about a race """
@@ -369,10 +514,20 @@ def races_detail(request, pk):
     return Response(serializer.data)
 
 
+@swagger_auto_schema(
+    operation_description="Create loan",
+    method="POST",
+    request_body=loan_create,
+    security=[{"Token": []}],
+)
+@swagger_auto_schema(
+    method="get", responses={200: LoanSerializer}, security=[{"Token": []}]
+)
 @api_view(["GET", "POST"])
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])
 def loans_list(request):
+    """ Get/create loans for the authenticated user """
     if request.method == "GET":
         data = Loan.objects.all().filter(recipient=request.user.entity)
         serializer = LoanSerializer(data, context={"request": request}, many=True)
@@ -390,10 +545,17 @@ def loans_list(request):
     return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
+@swagger_auto_schema(
+    operation_description="Update loan",
+    method="PUT",
+    request_body=loan_update,
+    security=[{"Token": []}],
+)
 @api_view(["PUT"])
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])
 def loan_detail(request, pk):
+    """ Update a loan """
     try:
         loan = Loan.objects.get(pk=pk)
     except Loan.DoesNotExist:

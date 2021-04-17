@@ -60,7 +60,7 @@ const useStyles = makeStyles((theme) => ({
 function App(props) {
   const classes = useStyles();
 
-const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
+  const prefersDarkMode = false; // useMediaQuery('(prefers-color-scheme: dark)');
 
   const theme = React.useMemo(
     () =>

@@ -120,7 +120,7 @@ class OrderSerializer(serializers.ModelSerializer):
             "buy_sell",
             "status",
         )
-        read_only_fields = ("status", "unfilled_volume")
+        read_only_fields = ("status", "unfilled_volume", "athlete", "entity")
 
     def __init__(self, *args, **kwargs):
         if "user" in kwargs:

@@ -5,6 +5,7 @@ from trading.loan import apply_all_interest
 
 LOGGER = logging.getLogger(__name__)
 
+
 class Command(BaseCommand):
     """ Compute interest for loans """
 

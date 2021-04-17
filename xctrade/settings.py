@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     "rest_framework.authtoken",  # if you use the same token auth system as the example
     "social_django",  # python social auth
     "import_export",
+    'drf_yasg',
 ]
 
 MIDDLEWARE = [

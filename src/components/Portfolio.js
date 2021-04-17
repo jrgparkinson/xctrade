@@ -8,6 +8,7 @@ import {Link} from 'react-router-dom';
 import EditIcon from '@material-ui/icons/Edit';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
+import Paper from '@material-ui/core/Paper';
 
 class Portfolio extends Component {
   state = {
@@ -152,8 +153,17 @@ class Portfolio extends Component {
 
       <Card style={{marginTop:10}}>
       <CardContent>
-      <b>API key</b> <br />
-      {apiKey}
+        <h4>API</h4>
+        <p>For the technically minded, you can interact with the underlying API using your personal private API key:</p>
+      
+        <Paper variant="outlined" style={{padding:10, margin:10}}>{apiKey}</Paper>
+
+      <h6>API documentation: <a href="/redoc/">redoc</a>, <a href="/swagger/">swagger</a></h6>
+
+      <h6>Example</h6>
+      <Paper variant="outlined" style={{padding:10, margin:10}}>
+      curl -X GET https://xctrade.herokuapp.com/api/athletes/ -H 'Authorization: Token {apiKey}'
+      </Paper>
       </CardContent>
       </Card>
       </Container>

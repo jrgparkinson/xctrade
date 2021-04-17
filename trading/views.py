@@ -16,6 +16,8 @@ from rest_framework.authtoken.models import Token
 from rest_framework.permissions import AllowAny
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
+from drf_yasg.utils import swagger_auto_schema
+from drf_yasg import openapi
 from .models import Athlete, Order, Share, Dividend, Auction, Bid, Loan, Trade, Race, Result, Entity
 from .serializers import (
     EntitySerializer,
@@ -36,6 +38,11 @@ from .serializers import (
 
 LOGGER = logging.getLogger(__name__)
 
+
+athlete_id_param = openapi.Parameter('athlete_id', openapi.IN_QUERY,
+                                    description="Athlete ID", type=openapi.TYPE_INTEGER)
+# usage: 
+# @swagger_auto_schema(method='get', manual_parameters=[athlete_id_param],  responses={200: RaceDetailSerializer})
 
 class SocialSerializer(serializers.Serializer):
     """
@@ -118,7 +125,7 @@ def exchange_token(request, backend):  # pylint: disable=W0613
 @permission_classes([AllowAny])
 @authentication_classes([TokenAuthentication])
 def athletes_list(request):
-    # LOGGER.info("User: %s" % user)
+    """ Get a list of all athletes """
     if request.method == "GET":
         data = Athlete.objects.all()
         serializer = AthleteSerializer(data, context={"request": request}, many=True)
@@ -127,6 +134,7 @@ def athletes_list(request):
 
 @api_view(["GET"])
 def entities_list(request):
+    """ Get a list of all entities (players) """
     if request.method == "GET":
         data = Entity.objects.all().filter(is_bank=False)
         serializer = EntitySerializer(data, context={"request": request}, many=True)
@@ -137,6 +145,7 @@ def entities_list(request):
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])
 def profile(request):
+    """ Retrieve or update your user profile """
     user = request.user
     if request.method == "GET":
         data = user.entity
@@ -158,6 +167,7 @@ def profile(request):
 
 @api_view(["GET"])
 def auction_shares(request):
+    """ Shares available to bid on at an auction """
     auction = Auction.get_active_auction()
 
     if not auction:
@@ -216,6 +226,8 @@ def shares_list(request):
     return Response(serializer.data)
 
 
+# Need to rethink this end point
+# @swagger_auto_schema(method='get', manual_parameters=[athlete_id_param],  responses={200: RaceDetailSerializer})
 @api_view(["GET"])
 def trades_list(request):
     if request.method == "GET":
@@ -238,8 +250,8 @@ def trades_list(request):
 
 
 @api_view(["GET", "POST"])
-# @authentication_classes([TokenAuthentication])
-# @permission_classes([IsAuthenticated])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
 def orders_list(request):
     """
     post example:
@@ -269,7 +281,6 @@ def orders_list(request):
     elif request.method == "POST":
         serializer = OrderSerializer(data=request.data)
         serializer.user = request.user
-        # LOGGER.info("User: %s", request.user)
         if serializer.is_valid():
             serializer.save()
             return Response(status=status.HTTP_201_CREATED)
@@ -279,6 +290,7 @@ def orders_list(request):
 
 @api_view(["GET"])
 def athlete_detail(request, pk):
+    """ Get detailed information about an athlete """
     try:
         obj = Athlete.objects.get(pk=pk)
     except Athlete.DoesNotExist:
@@ -292,12 +304,12 @@ def athlete_detail(request, pk):
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])
 def order_prices(request, athlete_pk):
+    """ Retrieve available cash and shares in an athlete """
     user = request.user
     athlete = Athlete.objects.get(pk=athlete_pk)
     entity = user.entity  # type: Entity
 
     # Retrieve:
-    # available capital, shares in athlete owned, current athlete price
     data = {
         "capital": entity.capital,
         "shares_owned": entity.vol_owned(athlete),
@@ -348,8 +360,10 @@ def dividends_list(request):
     return Response(serializer.data)
 
 
+@swagger_auto_schema(method='get', responses={200: RaceDetailSerializer})
 @api_view(["GET"])
 def races_detail(request, pk):
+    """ Get detailed information about a race """
     race = Race.objects.get(pk=pk)
     serializer = RaceDetailSerializer(race, context={"request": request}, many=False)
     return Response(serializer.data)

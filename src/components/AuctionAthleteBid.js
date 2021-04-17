@@ -1,6 +1,8 @@
 
 import {Link} from 'react-router-dom';
 import TextField from '@material-ui/core/TextField';
+import TableCell from '@material-ui/core/TableCell';
+import TableRow from '@material-ui/core/TableRow';
 
 export default function AuctionAthleteBid({share, bid, updateBid}) {
 
@@ -30,13 +32,13 @@ export default function AuctionAthleteBid({share, bid, updateBid}) {
     
 
     return (
-        <tr key={share.pk}>
-            <td>
+        <TableRow key={share.pk}>
+            <TableCell>
             <Link to={'/athletes/' + share.athlete.pk + '/'}>{share.athlete.name} </Link>
-            {/* </td>
-            <td> */}
-                 ({share.volume})              </td>
-            <td>
+            {/* </TableCell>
+            <TableCell> */}
+                 ({share.volume})              </TableCell>
+            <TableCell>
             <TextField label="Volume" size="small"
         value={bid.volume} 
         variant="outlined" 
@@ -48,8 +50,8 @@ export default function AuctionAthleteBid({share, bid, updateBid}) {
         variant="outlined" 
         onChange={priceChanged}
         style={{width: "70px"}}
-        /></td>
-        <td>{Number(bid.price_per_volume*bid.volume).toFixed(2) }</td>
-        </tr>
+        /></TableCell>
+        <TableCell>{Number(bid.price_per_volume*bid.volume).toFixed(2) }</TableCell>
+        </TableRow>
   );
 }

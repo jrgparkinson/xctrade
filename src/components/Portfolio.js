@@ -1,6 +1,10 @@
 import React, { Component } from "react";
 import { Container } from "reactstrap";
-import { Table } from "reactstrap";
+import Table from '@material-ui/core/Table';
+import TableBody from '@material-ui/core/TableBody';
+import TableCell from '@material-ui/core/TableCell';
+import TableHead from '@material-ui/core/TableHead';
+import TableRow from '@material-ui/core/TableRow';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import API from '../utils/api';
@@ -88,30 +92,30 @@ class Portfolio extends Component {
       <CardContent>
       <h4>Shares owned</h4>
         <Table>
-        <thead>
-          <tr>
-            <th>Athlete</th>
-            <th>Volume</th>
-            <th>Value (per share)</th>
-          </tr>
-        </thead>
-        <tbody>
+        <TableHead>
+          <TableRow>
+            <TableCell>Athlete</TableCell>
+            <TableCell>Volume</TableCell>
+            <TableCell>Value (per share)</TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
           {!shares || shares.length === 0 ? (
-            <tr>
-              <td colSpan="6" align="center">
+            <TableRow>
+              <TableCell colSpan="6" align="center">
                 None
-              </td>
-            </tr>
+              </TableCell>
+            </TableRow>
           ) : (
             shares.map((share, index) => (
-              <tr key={share.pk}>
-                <td><Link to={'/athletes/' + share.athlete.pk + '/'}>{share.athlete.name}</Link></td>
-                <td>{share.volume}</td>
-                <td>{share.volume*share.athlete.value} ({share.athlete.value})</td>
-              </tr>
+              <TableRow key={share.pk}>
+                <TableCell><Link to={'/athletes/' + share.athlete.pk + '/'}>{share.athlete.name}</Link></TableCell>
+                <TableCell>{share.volume}</TableCell>
+                <TableCell>{share.volume*share.athlete.value} ({share.athlete.value})</TableCell>
+              </TableRow>
             ))
           )}
-        </tbody>
+        </TableBody>
       </Table>
       </CardContent>
       </Card>
@@ -120,32 +124,32 @@ class Portfolio extends Component {
       <CardContent>
       <h4>Dividends Received</h4>
         <Table>
-        <thead>
-          <tr>
-            <th>Race</th>
-            <th>Athlete</th>
-            <th>Vol</th>
-            <th>Dividend</th>
-          </tr>
-        </thead>
-        <tbody>
+        <TableHead>
+          <TableRow>
+            <TableCell>Race</TableCell>
+            <TableCell>Athlete</TableCell>
+            <TableCell>Vol</TableCell>
+            <TableCell>Dividend</TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
           {!dividends || dividends.length === 0 ? (
-            <tr>
-              <td colSpan="6" align="center">
+            <TableRow>
+              <TableCell colSpan="6" align="center">
                 None
-              </td>
-            </tr>
+              </TableCell>
+            </TableRow>
           ) : (
             dividends.map((dividend, index) => (
-              <tr key={dividend.pk}>
-                <td><Link to={'/athletes/' + dividend.result.race.pk + '/'}>{dividend.result.race.name}</Link></td>
-                <td><Link to={'/athletes/' + dividend.result.athlete.pk + '/'}>{dividend.result.athlete.name}</Link></td>
-                <td>{dividend.volume}</td>
-                <td>{dividend.volume*dividend.dividend_per_share}</td>
-              </tr>
+              <TableRow key={dividend.pk}>
+                <TableCell><Link to={'/athletes/' + dividend.result.race.pk + '/'}>{dividend.result.race.name}</Link></TableCell>
+                <TableCell><Link to={'/athletes/' + dividend.result.athlete.pk + '/'}>{dividend.result.athlete.name}</Link></TableCell>
+                <TableCell>{dividend.volume}</TableCell>
+                <TableCell>{dividend.volume*dividend.dividend_per_share}</TableCell>
+              </TableRow>
             ))
           )}
-        </tbody>
+        </TableBody>
       </Table>
       </CardContent>
       </Card>

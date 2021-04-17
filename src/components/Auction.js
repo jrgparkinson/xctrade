@@ -3,7 +3,11 @@ import { Container } from "reactstrap";
 // import Card from '@material-ui/core/Card';
 // import CardContent from '@material-ui/core/CardContent';
 import API from '../utils/api';
-import { Table } from "reactstrap";
+import Table from '@material-ui/core/Table';
+import TableBody from '@material-ui/core/TableBody';
+import TableCell from '@material-ui/core/TableCell';
+import TableHead from '@material-ui/core/TableHead';
+import TableRow from '@material-ui/core/TableRow';
 import AuctionAthleteBid from "./AuctionAthleteBid";
 import Button from '@material-ui/core/Button';
 import Alert from '@material-ui/lab/Alert';
@@ -139,33 +143,33 @@ class Auction extends Component {
       //  style={{marginLeft:-10,
       // width: "102%"}}
       >
-        <thead>
-          <tr>
-            <th>Athlete (Available)
+        <TableHead>
+          <TableRow>
+            <TableCell>Athlete (Available)
 
-            {/* </th>
-            <th> */}
-              </th>
-            {/* <th>Bid volume</th>
-            <th>Bid unit price</th> */}
-            <th>Bid</th>
-            <th>Total</th>
-          </tr>
-        </thead>
-        <tbody>
+            {/* </TableCell>
+            <TableCell> */}
+              </TableCell>
+            {/* <TableCell>Bid volume</TableCell>
+            <TableCell>Bid unit price</TableCell> */}
+            <TableCell>Bid</TableCell>
+            <TableCell>Total</TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
           {!this.state.shares || this.state.shares.length <= 0 ? (
-            <tr>
-              <td colSpan="6" align="center">
+            <TableRow>
+              <TableCell colSpan="6" align="center">
                 <b>Ops, no one here yet</b>
-              </td>
-            </tr>
+              </TableCell>
+            </TableRow>
           ) : (
             this.state.shares.map(share => (
               <AuctionAthleteBid key={share.pk} share={share} bid={this.getBid(share.athlete.pk)}
               updateBid={this.updateBid} />
             ))
           )}
-        </tbody>
+        </TableBody>
       </Table>
 
         

@@ -13,6 +13,7 @@ from .models import (
     Auction,
     Bid,
     Loan,
+    LoanPolicy
 )
 from .entity import get_cowley_club_bank
 
@@ -270,24 +271,47 @@ class BidSerializer(serializers.ModelSerializer):
 
         return super().create(validated_data)
 
+class LoanPolicySerializer(serializers.ModelSerializer):
+    """ Serializer Loan objects """
+
+    lender = serializers.PrimaryKeyRelatedField(read_only=True)
+
+    class Meta:
+        model = LoanPolicy
+        fields = (
+            "pk",
+            "lender",
+            "max_balance",
+            "interest_interval",
+            "interest_rate",
+        )
+
+    # def create(self, validated_data):
+    #     # user = self.user
+    #     # validated_data["recipient"] = user.entity
+    #     validated_data["lender"] = get_cowley_club_bank()
+
+    #     LOGGER.info(validated_data)
+
+    #     return super().create(validated_data)
+
+
 
 class LoanSerializer(serializers.ModelSerializer):
     """ Serializer Loan objects """
 
-    lender = serializers.PrimaryKeyRelatedField(read_only=True)
-    # recipient = serializers.PrimaryKeyRelatedField(queryset=Entity.objects.all(), read_only=True)
+    loan_info = LoanPolicySerializer(many=False, read_only=True)
+    loan_info_id = serializers.PrimaryKeyRelatedField(queryset=LoanPolicy.objects.all(), write_only=True)
 
     class Meta:
         model = Loan
         fields = (
             "pk",
-            "lender",
-            # "recipient",
+            "loan_info",
+            "loan_info_id",
             "created",
             "balance",
             "interest_last_added",
-            "interest_interval",
-            "interest_rate",
         )
 
     def __init__(self, *args, **kwargs):
@@ -298,13 +322,12 @@ class LoanSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         user = self.user
         validated_data["recipient"] = user.entity
-        validated_data["lender"] = get_cowley_club_bank()
+        validated_data["loan_info"] = validated_data["loan_info_id"]
+        validated_data.pop("loan_info_id", None)
+        # validated_data["lender"] = get_cowley_club_bank()
 
         LOGGER.info(validated_data)
 
-        # # Delete existing object
-        # Bid.objects.all().filter(
-        #     athlete=validated_data["athlete"], bidder=validated_data["bidder"]
-        # ).delete()
-
         return super().create(validated_data)
+
+

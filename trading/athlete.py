@@ -65,7 +65,7 @@ class Athlete(models.Model):
             if len(recent_trades) == 1:
                 return recent_trades[0].unit_price
             else:
-                num_trades = 2  # consider N most recent trades
+                num_trades = 1  # consider N most recent trades
                 trades_to_consider = recent_trades[:num_trades]
                 total_vol = Decimal(0)
                 total_vol_price = Decimal(0)

@@ -86,8 +86,7 @@ loan_create = openapi.Schema(
     required=["balance", "interest_rate"],
     properties={
         "balance": openapi.Schema(type=openapi.TYPE_NUMBER),
-        "interest_interval": openapi.Schema(type=openapi.TYPE_STRING),
-        "interest_rate": openapi.Schema(type=openapi.TYPE_NUMBER),
+        "loan_info_id": openapi.Schema(type=openapi.TYPE_INTEGER, description="Loan info ID"),
     },
 )
 loan_update = openapi.Schema(
@@ -192,8 +191,8 @@ def exchange_token(request, backend):  # pylint: disable=W0613
 
 @swagger_auto_schema(method="get", responses={200: AthleteSerializer})
 @api_view(["GET"])
-# @permission_classes([AllowAny])
-# @authentication_classes([TokenAuthentication])
+@permission_classes([AllowAny])
+@authentication_classes([TokenAuthentication])
 def athletes_list(request):
     """ Get a list of all athletes """
     if request.method == "GET":

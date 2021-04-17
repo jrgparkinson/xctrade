@@ -43,7 +43,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function SideNav() {
+export default function SideNav({hasAuction}) {
   const classes = useStyles();
 
   return (
@@ -58,7 +58,7 @@ export default function SideNav() {
       <Toolbar />
       <div className={classes.drawerContainer}>
         <List>
-          {getNavLinks().map((link, index) => (
+          {getNavLinks(hasAuction).map((link, index) => (
             <ListItem button key={link.text} component={NavLink}
               activeClassName="Mui-selected"
               to={'/' + link.link}>

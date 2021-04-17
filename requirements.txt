@@ -30,3 +30,4 @@ bs4
 pytest-django
 pylint-django
 pytest-cov
+drf-yasg

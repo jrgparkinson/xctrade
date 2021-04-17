@@ -116,7 +116,7 @@ class AthletePriceChart extends React.PureComponent {
       data.push({timestamp: new Date(),
         unit_price: lastTrade.unit_price});
     }
-
+    console.log("Data: "  + JSON.stringify(data));
     console.log(volData);
 
 
@@ -134,7 +134,7 @@ class AthletePriceChart extends React.PureComponent {
 
       return (
         <Paper>
-          <div style={{float: 'right', textAlign: 'right', width: '100%', marginBottom: -100}}>
+          <div style={{float: 'right', textAlign: 'right', width: '100%', marginBottom: 0}}>
             <ButtonGroup color="primary" aria-label="outlined primary button group">
               <Button onClick={(e) => this.handleClickRange(-1)}>Max</Button>
               <Button onClick={(e) => this.handleClickRange(30)}>Month</Button>
@@ -142,7 +142,7 @@ class AthletePriceChart extends React.PureComponent {
             </ButtonGroup></div>
 
           <div
-            style={{height: 300, width: '100%', padding: 5, marginTop: -10}}
+            style={{height: 360, width: '100%', padding: 5, marginTop: -10}}
             ref={(c) => this.container = c}
           >
             <VictoryChart

@@ -17,7 +17,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function BottomNav() {
+export default function BottomNav({hasAuction}) {
   const classes = useStyles();
 
   return (
@@ -25,7 +25,7 @@ export default function BottomNav() {
       showLabels
       className={classes.root}
     >
-      {getNavLinks().map((link, index) => (
+      {getNavLinks(hasAuction).map((link, index) => (
         <BottomNavigationAction component={NavLink} to={'/' + link.link}
           label={link.text} icon={link.icon}
           activeClassName="Mui-selected"

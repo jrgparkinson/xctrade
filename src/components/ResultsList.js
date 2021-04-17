@@ -1,5 +1,9 @@
 import React, {Component} from 'react';
-import {Table} from 'reactstrap';
+import Table from '@material-ui/core/Table';
+import TableBody from '@material-ui/core/TableBody';
+import TableCell from '@material-ui/core/TableCell';
+import TableHead from '@material-ui/core/TableHead';
+import TableRow from '@material-ui/core/TableRow';
 import {Link} from 'react-router-dom';
 
 class ResultList extends Component {
@@ -11,28 +15,28 @@ class ResultList extends Component {
                 <b>No results to display</b>
           ) : (
             <Table>
-              <thead>
-                <tr>
-                  <th>Pos</th>
-                  <th>Name</th>
-                  <th>Time</th>
-                  <th>Dividend</th>
-                </tr>
-              </thead>
-              <tbody>
+              <TableHead>
+                <TableRow>
+                  <TableCell>Pos</TableCell>
+                  <TableCell>Name</TableCell>
+                  <TableCell>Time</TableCell>
+                  <TableCell>Dividend</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
 
                 {results.map((result, index) => (
-                  <tr key={result.pk}>
-                    <td>{index+1}</td>
-                    <td><Link to={'/athletes/' + result.athlete.pk + '/'}>{result.athlete.name}</Link></td>
-                    <td>{result.time}</td>
-                    <td>
+                  <TableRow key={result.pk}>
+                    <TableCell>{index+1}</TableCell>
+                    <TableCell><Link to={'/athletes/' + result.athlete.pk + '/'}>{result.athlete.name}</Link></TableCell>
+                    <TableCell>{result.time}</TableCell>
+                    <TableCell>
                       {result.dividend && result.dividend>0 ?
-                      result.dividend : '' }</td>
-                  </tr>
+                      result.dividend : '' }</TableCell>
+                  </TableRow>
                 ))}
 
-              </tbody>
+              </TableBody>
             </Table>
 
           )}

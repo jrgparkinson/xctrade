@@ -1,5 +1,9 @@
 import React, {Component} from 'react';
-import {Table} from 'reactstrap';
+import Table from '@material-ui/core/Table';
+import TableBody from '@material-ui/core/TableBody';
+import TableCell from '@material-ui/core/TableCell';
+import TableHead from '@material-ui/core/TableHead';
+import TableRow from '@material-ui/core/TableRow';
 import {Link} from 'react-router-dom';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
@@ -15,26 +19,26 @@ class AthleteResultList extends Component {
                 <b>No results to display</b>
           ) : (
             <Table>
-              <thead>
-                <tr>
-                  <th>Race</th>
-                  <th>Pos</th>
-                  <th>Dividend</th>
-                </tr>
-              </thead>
-              <tbody>
+              <TableHead>
+                <TableRow>
+                  <TableCell>Race</TableCell>
+                  <TableCell>Pos</TableCell>
+                  <TableCell>Dividend</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
 
                 {results.map((result, index) => (
-                  <tr key={result.pk}>
-                    <td><Link to={'/races/' + result.race.pk + '/'}>{result.race.name}</Link></td>
-                    <td>{result.position}</td>
-                    <td>
+                  <TableRow key={result.pk}>
+                    <TableCell><Link to={'/races/' + result.race.pk + '/'}>{result.race.name}</Link></TableCell>
+                    <TableCell>{result.position}</TableCell>
+                    <TableCell>
                       {result.dividend && result.dividend>0 ?
-                      result.dividend : '' }</td>
-                  </tr>
+                      result.dividend : '' }</TableCell>
+                  </TableRow>
                 ))}
 
-              </tbody>
+              </TableBody>
             </Table>
 
           )}

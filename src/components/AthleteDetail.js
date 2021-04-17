@@ -7,6 +7,7 @@ import Grid from '@material-ui/core/Grid';
 import Waiting from "./Waiting";
 import AthletePriceChart from "./AthletePriceChart";
 import OrderCreate from "./OrderCreate";
+import TradeList from "./TradeList";
 import EqualizerIcon from '@material-ui/icons/Equalizer';
 import AthleteResultList from "./AthleteResultsList";
 import Tooltip from '@material-ui/core/Tooltip';
@@ -75,7 +76,8 @@ class AthleteDetail extends Component {
             {API.isAuthorised() ? <OrderCreate athlete={athlete} orderPrices={this.state.orderPrices} onCreate={this.resetState}/> : "" }
             <AthletePriceChart athleteId={athlete.pk}/>
             <AthleteResultList results={this.state.results}/>
-            <OrderList orders={this.state.orders}/>
+            <OrderList orders={this.state.orders} userDetails={this.state.orderPrices}/>
+            <TradeList trades={this.state.trades} />
           </div>;
         } else {
             return <div><h3>Unknown athlete</h3></div>;

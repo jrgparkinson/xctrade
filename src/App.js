@@ -16,6 +16,7 @@ import {drawerWidth, breakpointSize} from "./utils/links";
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
+import API from './utils/api';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -56,11 +57,17 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-// class App extends Component {
 function App(props) {
+  const [auction, setAuction] = React.useState(null);
+
   const classes = useStyles();
 
-  const prefersDarkMode = false; // useMediaQuery('(prefers-color-scheme: dark)');
+  const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
+
+  API.getAuction().then(res => {
+    setAuction(res.data);
+    // let auction = res.data;
+  });
 
   const theme = React.useMemo(
     () =>
@@ -72,6 +79,7 @@ function App(props) {
     [prefersDarkMode],
   );
 
+    const hasAuction = auction !== null;
 
   return (
 <ThemeProvider theme={theme}>
@@ -80,8 +88,8 @@ function App(props) {
       <BrowserRouter>
         <Header />
 
-        <SideNav />
-        <BottomNav />
+        <SideNav hasAuction={hasAuction} />
+        <BottomNav hasAuction={hasAuction} />
 
         <main className={classes.content}>
           <Switch>

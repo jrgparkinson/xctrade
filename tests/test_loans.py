@@ -7,7 +7,7 @@ from trading.order import Order, Trade
 from trading.asset import Share
 from trading.races import Result, Race, compute_dividends, Dividend
 from trading.auction import Auction, Bid
-from trading.loan import Loan, apply_all_interest
+from trading.loan import Loan, apply_all_interest, LoanPolicy
 import json
 from decimal import Decimal
 from rest_framework.authtoken.models import Token
@@ -52,19 +52,25 @@ class LoanTests(APITestCase):
 
             Share(athlete=athlete, volume=Decimal(2), owner=bank).save()
 
+        # Create loan policy
+        LoanPolicy(lender=get_cowley_club_bank(), interest_interval=timedelta(days=7), interest_rate=0.05, max_balance=1000).save()
+
     def test_create_loan(self):
 
-        lender = get_cowley_club_bank()
-        recipient = Entity.objects.get(name="jparkinson")
+        loan_policy = LoanPolicy.objects.get(pk=1)
+
+        # lender = get_cowley_club_bank()
+        # recipient = Entity.objects.get(name="jparkinson")
 
         token = Token.objects.get(user__username="jparkinson")
         client = APIClient()
         client.credentials(HTTP_AUTHORIZATION="Token " + token.key)
 
-        # Try and create a bid
+        # Try and create a loan
         response = client.post(
-            self.loans_url, [{"balance": 100.0, "interest_rate": 1.05}], format="json",
+            self.loans_url, [{"balance": 100.0, "loan_info_id": loan_policy.pk}], format="json",
         )
+        LOGGER.info(response.content)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         loans = Loan.objects.all()
         self.assertEqual(len(loans), 1)
@@ -75,7 +81,7 @@ class LoanTests(APITestCase):
         LOGGER.info(loans)
         self.assertEqual(len(loans), 1)
         self.assertEqual(loans[0]["balance"], "100.00")
-        self.assertEqual(loans[0]["interest_rate"], "1.05")
+        self.assertEqual(loans[0]["loan_info"]["interest_rate"], "0.05")
         self.assertIsNone(loans[0]["interest_last_added"])
         self.assertEqual(
             float(Entity.objects.get(name="jparkinson").capital),
@@ -95,11 +101,12 @@ class LoanTests(APITestCase):
         )
 
     def test_accrue_interest(self):
-        lender = get_cowley_club_bank()
+        # lender = get_cowley_club_bank()
         recipient = Entity.objects.get(name="jparkinson")
 
-        loan = Loan.objects.create(lender=lender, recipient=recipient, balance=10.0, interest_rate=0.05,
-                                            interest_interval=timedelta(days=7))
+        loan_policy = LoanPolicy.objects.get(pk=1)
+
+        loan = Loan.objects.create(loan_info=loan_policy, recipient=recipient, balance=Decimal(10.0))
         loan.created=datetime.now(pytz.utc)-timedelta(days=4)
 
         # Not enough time passed, don't accrue interest
@@ -116,10 +123,9 @@ class LoanTests(APITestCase):
 
 
         # add a new loan
-        loan2 = Loan.objects.create(lender=lender, recipient=recipient, balance=20.0, interest_rate=0.1,
-                                            interest_interval=timedelta(days=7),
-                                            interest_last_added = datetime.now(pytz.utc) - timedelta(days=8))
+        loan2 = Loan.objects.create(loan_info=loan_policy, recipient=recipient, balance=20.0,
+                                    interest_last_added = datetime.now(pytz.utc) - timedelta(days=8))
 
         apply_all_interest()
         self.assertEqual(loan.balance, 10.5)
-        self.assertEqual(Loan.objects.get(pk=loan2.pk).balance, 22.0)
+        self.assertEqual(Loan.objects.get(pk=loan2.pk).balance, 21.0)

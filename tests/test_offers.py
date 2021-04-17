@@ -148,7 +148,7 @@ class OrdersTests(APITestCase):
         self.assertEqual(float(seller.capital), Entity.INITIAL_CAPITAL + 0.28)
 
         athlete = Athlete.objects.get(name="Joseph Woods")
-        self.assertEqual(athlete.value, Decimal("0.96"))
+        self.assertEqual(athlete.value, Decimal("0.94"))
 
         # Add a sell trade that's too expensive, shouldn't be actioned
         response = client.post(
@@ -259,4 +259,4 @@ class OrdersTests(APITestCase):
         self.assertEqual(trade[1].unit_price, Decimal("1.60"))
 
         athlete = Athlete.objects.get(pk=4)
-        self.assertEqual(athlete.value, Decimal("1.52"))
+        self.assertEqual(athlete.value, Decimal("1.60"))

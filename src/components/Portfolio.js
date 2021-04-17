@@ -111,7 +111,7 @@ class Portfolio extends Component {
               <TableRow key={share.pk}>
                 <TableCell><Link to={'/athletes/' + share.athlete.pk + '/'}>{share.athlete.name}</Link></TableCell>
                 <TableCell>{share.volume}</TableCell>
-                <TableCell>{share.volume*share.athlete.value} ({share.athlete.value})</TableCell>
+                <TableCell>{Number(share.volume*share.athlete.value).toFixed(2)} ({share.athlete.value})</TableCell>
               </TableRow>
             ))
           )}

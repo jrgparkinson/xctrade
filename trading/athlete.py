@@ -63,7 +63,7 @@ class Athlete(models.Model):
         recent_trades = Trade.objects.all().filter(athlete=self).order_by("-timestamp")
         if recent_trades:
             if len(recent_trades) == 1:
-                return recent_trades[0].unit_price
+                return round(recent_trades[0].unit_price, 2)
             else:
                 num_trades = 1  # consider N most recent trades
                 trades_to_consider = recent_trades[:num_trades]
@@ -73,7 +73,7 @@ class Athlete(models.Model):
                     total_vol_price += t.unit_price * t.volume
                     total_vol += t.volume
 
-                return round(total_vol_price / total_vol, 2)
+                return Decimal(round(total_vol_price / total_vol, 2))
 
         else:
             return None

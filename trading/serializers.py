@@ -271,7 +271,7 @@ class BidSerializer(serializers.ModelSerializer):
 
         return super().create(validated_data)
 
-class LoanPolicySerializer(serializers.ModelSerializer):
+class LoanInfoSerializer(serializers.ModelSerializer):
     """ Serializer Loan objects """
 
     lender = serializers.PrimaryKeyRelatedField(read_only=True)
@@ -285,6 +285,12 @@ class LoanPolicySerializer(serializers.ModelSerializer):
             "interest_interval",
             "interest_rate",
         )
+
+    def to_representation(self, instance):
+        """ Encode time interval as number of days """
+        data = super(LoanInfoSerializer, self).to_representation(instance)
+        data["interest_interval"] = instance.interest_interval.days
+        return data
 
     # def create(self, validated_data):
     #     # user = self.user
@@ -300,7 +306,7 @@ class LoanPolicySerializer(serializers.ModelSerializer):
 class LoanSerializer(serializers.ModelSerializer):
     """ Serializer Loan objects """
 
-    loan_info = LoanPolicySerializer(many=False, read_only=True)
+    loan_info = LoanInfoSerializer(many=False, read_only=True)
     loan_info_id = serializers.PrimaryKeyRelatedField(queryset=LoanPolicy.objects.all(), write_only=True)
 
     class Meta:

@@ -1,5 +1,5 @@
 from django.core.management.base import BaseCommand
-from trading.models import Athlete, Club, Order, Entity, Share, Trade, Race, Result
+from trading.models import Athlete, Club, Order, Entity, Share, Trade, Race, Result, LoanPolicy
 from trading.entity import get_cowley_club_bank
 from django.contrib.auth.models import User
 import random
@@ -133,4 +133,6 @@ class Command(BaseCommand):
             share = bank.get_share(athlete)
             share.volume = Decimal(100.0)
             share.save()
-            # Share(athlete=athlete, owner=bank, volume=Decimal(100.0)).save()
+
+        LoanPolicy.objects.get_or_create(lender=bank, interest_rate=0.05, interest_interval=timedelta(days=7), max_balance=1000)
+        LoanPolicy.objects.get_or_create(lender=bank, interest_rate=0.1, interest_interval=timedelta(days=7), max_balance=10000)

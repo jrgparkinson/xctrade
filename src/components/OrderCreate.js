@@ -110,8 +110,8 @@ export default function OrderCreate({athlete, orderPrices, onCreate}) {
         .catch((error) => {
           setCreateError(true);
           console.log(error.response);
-          console.log(error.response.data.detail);
-          if (error.response.data.detail) {
+          // console.log(error.response.data.detail);
+          if (error.response.data && error.response.data.detail) {
             setCreateError(error.response.data.detail);
           }
           setOpenSnackbar(true);

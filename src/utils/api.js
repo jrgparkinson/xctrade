@@ -83,6 +83,18 @@ class Api {
   postOrder(order) {
     return this.getAxios().post(API_URL + 'orders/', order);
   }
+  getLoans() {
+    return this.getAxios().get(API_URL + 'loans/');
+  }
+  getLoanInfo() {
+    return this.getAxios().get(API_URL + 'loan_info/');
+  }
+  updateLoan(loan_id, data) {
+    return this.getAxios().put(API_URL + 'loans/' + loan_id + "/", data);
+  }
+  createLoan(data) {
+    return this.getAxios().post(API_URL + 'loans/', data);
+  }
   cancelOrder(pk) {
     return this.getAxios().put(API_URL + 'orders/' + pk + '/', {
       'status': 'C',

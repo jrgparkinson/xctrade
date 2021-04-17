@@ -53,6 +53,7 @@ urlpatterns = [
     re_path(r"^api/results/$", views.results_list),
     re_path(r"^api/dividends/$", views.dividends_list),
     re_path(r"^api/loans/$", views.loans_list),
+    re_path(r"^api/loan_info/$", views.loan_info),
     re_path(r"^api/loans/(?P<pk>[0-9]+)/$", views.loan_detail),
     re_path(r"^api/auction/$", views.active_auction),
     re_path(r"^api/auction_shares/$", views.auction_shares),

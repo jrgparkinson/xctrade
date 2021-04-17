@@ -30,6 +30,7 @@ from .models import (
     Race,
     Result,
     Entity,
+    LoanPolicy,
 )
 from .serializers import (
     EntitySerializer,
@@ -44,6 +45,7 @@ from .serializers import (
     AuctionSerializer,
     BidSerializer,
     LoanSerializer,
+    LoanInfoSerializer,
 )
 
 
@@ -528,7 +530,7 @@ def races_detail(request, pk):
 def loans_list(request):
     """ Get/create loans for the authenticated user """
     if request.method == "GET":
-        data = Loan.objects.all().filter(recipient=request.user.entity)
+        data = Loan.objects.all().filter(recipient=request.user.entity).order_by("-balance")
         serializer = LoanSerializer(data, context={"request": request}, many=True)
         return Response(serializer.data)
     elif request.method == "POST":
@@ -543,6 +545,17 @@ def loans_list(request):
 
     return Response(status=status.HTTP_400_BAD_REQUEST)
 
+@swagger_auto_schema(
+    method="get", responses={200: LoanInfoSerializer}, security=[{"Token": []}]
+)
+@api_view(["GET", "POST"])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
+def loan_info(request):
+    """ Get loans available to take out """
+    data = LoanPolicy.objects.all()
+    serializer = LoanInfoSerializer(data, context={"request": request}, many=True)
+    return Response(serializer.data)
 
 @swagger_auto_schema(
     operation_description="Update loan",

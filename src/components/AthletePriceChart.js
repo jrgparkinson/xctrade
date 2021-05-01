@@ -76,8 +76,6 @@ class AthletePriceChart extends React.PureComponent {
 
     // let data = trades;
     const data = []; const volData = [];
-    // let trades = [];
-    const now = new Date();
     let maxVal = 0;
     let currentVol = {timestamp: null, volume: 0};
     for (let i=0; i < trades.length; i++) {

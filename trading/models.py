@@ -112,10 +112,12 @@ def match_order(sender, instance, created, **kwargs):  # pylint: disable=W0613
 
         bank_can_fill = False
 
+        athlete_value = instance.athlete.value
+
         while not bank_can_fill and bank_fill_vol > Decimal(0):
             # if we're selling, get the bank offer to buy
             bank_offer = bank.get_bank_offer(
-                instance.athlete, bank_fill_vol, instance.opposite_buy_sell_long
+                instance.athlete, bank_fill_vol, instance.opposite_buy_sell_long, athlete_value
             )
             bank_can_fill = bank_offer is not None and (
                 (instance.is_buy() and bank_offer <= instance.unit_price)

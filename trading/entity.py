@@ -101,14 +101,15 @@ class Entity(models.Model):
 
         return self.capital + share_value
 
-    def get_bank_offer(self, athlete, vol, buy_or_sell="Buy"):
+    def get_bank_offer(self, athlete, vol, buy_or_sell="Buy", current_unit_price=None):
         """
         Note: buy or sell is what the bank is doing
         """
         if not self.is_bank:
             raise NotBankException
 
-        current_unit_price = athlete.value
+        if not current_unit_price:
+            current_unit_price = athlete.value
 
         if not current_unit_price or not vol:
             return None

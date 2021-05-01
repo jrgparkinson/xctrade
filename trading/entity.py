@@ -118,13 +118,9 @@ class Entity(models.Model):
         # Prepare as floats for eval
         volume = float(vol)  # pylint: disable=W0612
         current_unit_price = float(current_unit_price)
-        # offer_total_price = Decimal(round(eval(bank_price_eq), 2))
-        # unit_price = round(offer_total_price / vol, 2)
 
         unit_price = Decimal(round(eval(bank_price_unit_eq), 2))
-        # LOGGER.info(f"Current unit: {current_unit_price}, volume: {volume}, offer_total: {offer_total_price}, offer unit: {unit_price}")
-        # LOGGER.info(f"Current unit: {current_unit_price}, volume: {volume},  offer unit: {unit_price}")
-        LOGGER.info(f"Bank offer to {buy_or_sell} {athlete.name} current value: {current_unit_price}, volume: {volume}, offer unit_price: {unit_price}")
+        LOGGER.info(f"Bank offer to {buy_or_sell} {athlete.name} current value: {current_unit_price}, volume: {round(volume, 2)}, offer unit_price: {round(unit_price, 2)}")
 
         # Check bank can actually do the trade
         if self.can_trade(athlete, unit_price, vol, buy_or_sell):

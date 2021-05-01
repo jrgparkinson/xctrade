@@ -1,5 +1,7 @@
 {
     "dividend": "d_min + (d_max - d_min) * (num_comp - position) / (num_comp-1)",
     "bankSellPrice": "current_unit_price*volume*pow(1.05, volume)",
-    "bankBuyPrice": "current_unit_price*volume*pow(0.97, volume)"
+    "bankBuyPrice": "current_unit_price*volume*pow(0.97, volume)",
+    "bankSellUnitPrice": "current_unit_price*pow(1.05, volume)",
+    "bankBuyUnitPrice": "current_unit_price*pow(0.97, volume)"
 }

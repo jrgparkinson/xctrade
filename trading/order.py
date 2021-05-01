@@ -1,5 +1,8 @@
 from django.db import models
 from decimal import Decimal
+from django.utils.timezone import now
+from datetime import datetime
+import pytz
 from .asset import Share
 from .entity import Entity
 from .athlete import Athlete
@@ -8,9 +11,20 @@ import logging
 
 LOGGER = logging.getLogger(__name__)
 
+class Future(models.Model):
+    """ Futures market """
+    expires = models.DateTimeField()
+    closes = models.DateTimeField(default=now())
+
+    def __str__(self):
+        return f"Future expiry: {self.expires}"
+
+    def __repr__(self):
+        return self.__str__()
+
 
 class Trade(models.Model):
-    """ History of a trade """
+    """ A single trade """
 
     athlete = models.ForeignKey(Athlete, on_delete=models.CASCADE)
     volume = models.DecimalField(max_digits=10, decimal_places=2)
@@ -22,16 +36,32 @@ class Trade(models.Model):
     )
     unit_price = models.DecimalField(decimal_places=2, max_digits=10)
     timestamp = models.DateTimeField(auto_now_add=True)
+    future = models.ForeignKey(Future, on_delete=models.CASCADE, null=True, default=None)
+    actioned = models.BooleanField(default=False)
 
     def save(self, *args, **kwargs):
         self.unit_price = Decimal(round(self.unit_price, 2))
         self.volume = Decimal(round(self.volume, 2))
         super(Trade, self).save(*args, **kwargs)
 
+    @property
+    def is_future(self):
+        return self.future is not None
+
     def do_trade(self):
+
+        if self.is_future and datetime.now(pytz.utc) < self.future.expires:
+            # Don't do trade if it's a futures trade and haven't reached expiry yet
+            return
+
+        if self.actioned:
+            # Don't do trade if we've already done it
+            return
+        
         price = self.unit_price * self.volume
         self.buyer.transfer_cash_to(self.seller, price)
         self.seller.transfer_shares_to(self.buyer, self.athlete, self.volume)
+        self.actioned = True
 
         LOGGER.info(
             f"Do trade: {self.athlete.name} ({self.volume}) from {self.seller.name} to {self.buyer.name} for {price}"
@@ -39,9 +69,13 @@ class Trade(models.Model):
 
         self.buyer.save()
         self.seller.save()
+        self.save()
 
     def __str__(self):
-        return f"Trade: {self.athlete.name} ({self.volume}) from {self.seller.name} to {self.buyer.name} at {self.unit_price}/share"
+        text = f"Trade: {self.athlete.name} ({self.volume}) from {self.seller.name} to {self.buyer.name} at {self.unit_price}/share"
+        if self.is_future:
+            text += f" on {self.future.expires}"
+        return text
 
     def __repr__(self):
         return self.__str__()
@@ -76,7 +110,7 @@ class Order(models.Model):
     status = models.CharField(max_length=1, choices=STATUSES, default=OPEN)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True, null=True)
-    # traded_at = models.DateTimeField(null=True)
+    future = models.ForeignKey(Future, on_delete=models.CASCADE, null=True, default=None)
 
     def __repr__(self):
         return f"{self.buy_sell}: {self.athlete} ({self.unfilled_volume}/{self.volume}) @ {self.unit_price} - {self.status}"
@@ -151,19 +185,13 @@ class Order(models.Model):
         buyer = self.entity if self.is_buy() else other.entity
         seller = self.entity if self.is_sell() else other.entity
 
-        # Now handled by the trade save object
-        # price = volume * matched_price
-        # buyer.transfer_cash_to(seller, price)
-        # seller.transfer_shares_to(buyer, self.athlete, volume)
-        # buyer.save()
-        # seller.save()
-
         trade = Trade(
             athlete=self.athlete,
             volume=volume,
             buyer=buyer,
             seller=seller,
             unit_price=matched_price,
+            future=self.future
         )
         trade.save()
         LOGGER.info("Created trade: %s", trade)

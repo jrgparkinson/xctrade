@@ -1,5 +1,5 @@
 from .athlete import Athlete, Club
-from .order import Order, Trade
+from .order import Order, Trade, Future
 from .entity import User, Entity, get_cowley_club_bank
 from .asset import Asset, Share
 from .races import Race, Result, Dividend

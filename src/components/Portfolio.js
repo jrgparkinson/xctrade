@@ -5,6 +5,7 @@ import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
+import Grid from '@material-ui/core/Grid';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import API from '../utils/api';
@@ -85,8 +86,17 @@ class Portfolio extends Component {
           <h1>{profile.name}<EditIcon onClick={this.editName} style={{ marginLeft: 10 }} /></h1>}
         <Card style={{ marginTop: 10 }}>
           <CardContent>
-            <h2>Portfolio value: {profile.portfolio_value}</h2>
-            <h4>Cash: {profile.capital} / Shares {sharesValue}</h4>
+          <Grid container spacing={2}
+              direction="row"
+              justify="space-between">
+              <Grid item xs={12}>
+              <h2>Portfolio value: ${profile.portfolio_value}</h2>
+                </Grid>
+            
+            <Grid item xs={4} style={{color: "green"}}><h5>Cash ${profile.capital}</h5></Grid>
+            <Grid item xs={4} style={{textAlign: 'center', color: "green"}}><h5>Shares ${sharesValue}</h5></Grid>
+            <Grid item xs={4} style={{textAlign: 'right', color: "red"}}><h5><Link to={'/bank/'} style={{ color: "red"}}>Debts: -${profile.total_debt}</Link></h5></Grid>
+            </Grid>
           </CardContent>
         </Card>
         <Card style={{ marginTop: 10 }}>

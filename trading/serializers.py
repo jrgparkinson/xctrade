@@ -55,8 +55,8 @@ class AthleteSerializer(serializers.ModelSerializer):
 class EntitySerializer(serializers.ModelSerializer):
     class Meta:
         model = Entity
-        fields = ("pk", "name", "user", "capital", "portfolio_value")
-        read_only_fields = ("capital", "portfolio_value", "user")
+        fields = ("pk", "name", "user", "capital", "portfolio_value", "total_debt")
+        read_only_fields = ("capital", "portfolio_value", "user", "total_debt")
 
 
 class ShareSerializer(serializers.ModelSerializer):

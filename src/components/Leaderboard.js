@@ -40,6 +40,7 @@ class Leaderboard extends Component {
             <TableCell></TableCell>
             <TableCell><Typography variant="body1">Name</Typography></TableCell>
             <TableCell>Portfolio value</TableCell>
+            <TableCell>Cash ($)</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -55,6 +56,7 @@ class Leaderboard extends Component {
                 <TableCell>{index+1}</TableCell>
                 <TableCell>{entity.name}</TableCell>
                 <TableCell>{entity.portfolio_value}</TableCell>
+                <TableCell>{entity.capital}</TableCell>
               </TableRow>
             ))
           )}

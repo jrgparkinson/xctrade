@@ -9,7 +9,7 @@ class AthleteList extends Component {
     return (
       <div>
         {!athletes || athletes.length <= 0 ? (
-                <b>No athletes to display</b>
+                <b>No athletes found</b>
           ) : (
             athletes.map((athlete) => (
               <AthleteCard athlete={athlete} key={athlete.pk}/>

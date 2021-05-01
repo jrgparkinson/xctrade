@@ -16,7 +16,7 @@ class AthleteResultList extends Component {
       <CardContent>
         <h4>Results</h4>
         {!results || results.length <= 0 ? (
-                <b>No results to display</b>
+                <b>No results found</b>
           ) : (
             <Table>
               <TableHead>

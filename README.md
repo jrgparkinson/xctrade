@@ -38,6 +38,7 @@ Having installed python, node, and npm:
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate
+pip install --upgrade pip
 pip install -r requirements.txt
 ```
 
@@ -89,4 +90,9 @@ npm run lint
 To fix issues with number of file watchers exceeded
 ```bash
 sudo sysctl -w fs.inotify.max_user_watches=524288
+```
+
+Kill processes running on a port, e.g. port 8000:
+```bash
+sudo fuser -k 8000/tcp
 ```

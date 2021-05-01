@@ -98,7 +98,7 @@ class OrderList extends Component {
                         {order.status === "O" ?
                           <Button variant="contained" color="info" onClick={() => this.cancelOrder(order.pk)}>
                             Cancel
-      </Button> : "Filled"}</TableCell>
+      </Button> : order.status === "C" ? "Cancelled": "Filled"}</TableCell>
                     </TableRow>
                   ))
                 )}

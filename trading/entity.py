@@ -1,7 +1,9 @@
 import logging
 from decimal import Decimal
 from django.db import models
+from django.apps import apps
 from django.contrib.auth.models import User
+from django.db.models import Q
 from .asset import Share
 from .equations import get_equation
 from .exceptions import (
@@ -110,14 +112,19 @@ class Entity(models.Model):
 
         if not current_unit_price or not vol:
             return None
-        bank_price_eq = get_equation(f"bank{buy_or_sell}Price")
+        # bank_price_eq = get_equation(f"bank{buy_or_sell}Price")
+        bank_price_unit_eq = get_equation(f"bank{buy_or_sell}UnitPrice")
 
         # Prepare as floats for eval
         volume = float(vol)  # pylint: disable=W0612
         current_unit_price = float(current_unit_price)
-        offer_total_price = Decimal(round(eval(bank_price_eq), 2))
+        # offer_total_price = Decimal(round(eval(bank_price_eq), 2))
+        # unit_price = round(offer_total_price / vol, 2)
 
-        unit_price = round(offer_total_price / vol, 2)
+        unit_price = Decimal(round(eval(bank_price_unit_eq), 2))
+        # LOGGER.info(f"Current unit: {current_unit_price}, volume: {volume}, offer_total: {offer_total_price}, offer unit: {unit_price}")
+        # LOGGER.info(f"Current unit: {current_unit_price}, volume: {volume},  offer unit: {unit_price}")
+        LOGGER.info(f"Bank offer to {buy_or_sell} {athlete.name} current value: {current_unit_price}, volume: {volume}, offer unit_price: {unit_price}")
 
         # Check bank can actually do the trade
         if self.can_trade(athlete, unit_price, vol, buy_or_sell):
@@ -126,6 +133,14 @@ class Entity(models.Model):
         else:
             # LOGGER.info(f"Bank offer: {athlete.name} ({vol}): None")
             return None
+
+    @property
+    def total_debt(self):
+        loans = apps.get_model("trading.Loan").objects.all().filter(Q(recipient=self) & Q(balance__gte=0))
+        if loans:
+            return Decimal(round(sum([loan.balance for loan in loans]), 2))
+        else:
+            return Decimal("0.00")
 
     def __repr__(self):
         return self.name

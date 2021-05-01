@@ -1,5 +1,5 @@
 from django.core.management.base import BaseCommand
-from trading.models import Athlete, Club, Order, Entity, Share, Trade, Race, Result, LoanPolicy
+from trading.models import Athlete, Club, Order, Entity, Share, Trade, Race, Result, LoanPolicy, Future
 from trading.entity import get_cowley_club_bank
 from django.contrib.auth.models import User
 import random
@@ -136,3 +136,8 @@ class Command(BaseCommand):
 
         LoanPolicy.objects.get_or_create(lender=bank, interest_rate=0.05, interest_interval=timedelta(days=7), max_balance=1000)
         LoanPolicy.objects.get_or_create(lender=bank, interest_rate=0.1, interest_interval=timedelta(days=7), max_balance=10000)
+
+        # Some futures markets
+        Future.objects.get_or_create(expires=datetime(2021, 12, 1, tzinfo=pytz.utc), closes=datetime(2021, 10, 1, tzinfo=pytz.utc)))
+        Future.objects.get_or_create(expires=datetime(2021, 11, 1, tzinfo=pytz.utc), closes=datetime(2021, 9, 1, tzinfo=pytz.utc)))
+        Future.objects.get_or_create(expires=datetime(2021, 10, 1, tzinfo=pytz.utc), closes=datetime(2020, 10, 1, tzinfo=pytz.utc)))

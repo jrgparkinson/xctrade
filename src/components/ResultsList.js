@@ -12,7 +12,7 @@ class ResultList extends Component {
     return (
       <div>
         {!results || results.length <= 0 ? (
-                <b>No results to display</b>
+                <b>No results found</b>
           ) : (
             <Table>
               <TableHead>

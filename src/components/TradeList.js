@@ -19,13 +19,9 @@ class TradeList extends Component {
     this.setState({ trades: props.trades });
   }
 
-//   componentDidMount() {
-//     this.resetState();
-//   }
-
   render() {
-    const trades = this.state.trades;
-    console.log(trades);
+    const trades = this.state.trades.sort((a,b)=>new Date(b.timestamp)-new Date(a.timestamp));
+    console.log("Trades: " + JSON.stringify(trades));
 
     if (trades != null && trades.length > 0) {
     

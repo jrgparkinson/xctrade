@@ -72,6 +72,8 @@ class AthletePriceChart extends React.PureComponent {
 
     console.log(this.state);
 
+    const msPerDay = 1000 * 60 * 60 * 24;
+
     // let data = trades;
     const data = []; const volData = [];
     // let trades = [];
@@ -81,56 +83,62 @@ class AthletePriceChart extends React.PureComponent {
     for (let i=0; i < trades.length; i++) {
       const trade = this.state.trades[i];
       const d = new Date(trade.timestamp);
-      trade.timestamp = d; // d.toLocaleDateString();
-      const delay = now.getTime() - d.getTime();
-      if (delay/(1000 * 60 * 60 * 24) < this.state.daysRange || this.state.daysRange < 0) {
-        data.push(trade);
+      trade.timestamp = d;
+      data.push(trade);
 
-        // Coarse grain volume data
-        // console.log(trade.timestamp + ", " + currentVol);
-        if (currentVol.timestamp === null) {
-          currentVol = {timestamp: trade.timestamp, volume: Number(trade.volume)};
-        }
-
-        console.log(trade.timestamp - currentVol.timestamp);
-        if ((trade.timestamp - currentVol.timestamp)/(1000*60*60*24) < 1) {
-          currentVol.volume += Number(trade.volume);
-        } else {
-          volData.push(currentVol);
-          currentVol = {timestamp: trade.timestamp, volume: Number(trade.volume)};
-        }
-        console.log(currentVol);
-
-        if (i===trades.length-1) {
-          volData.push(currentVol);
-        }
-
-        console.log('Include: ' + JSON.stringify(trade));
-        maxVal = Number(trade.unit_price) > maxVal ? Number(trade.unit_price) : maxVal;
-      } else {
-        console.log('Skip: ' + JSON.stringify(trade));
+      // Coarse grain volume data
+      // console.log(trade.timestamp + ", " + currentVol);
+      if (currentVol.timestamp === null) {
+        currentVol = {timestamp: trade.timestamp, volume: Number(trade.volume)};
       }
+
+      console.log(trade.timestamp - currentVol.timestamp);
+      if ((trade.timestamp - currentVol.timestamp)/(1000*60*60*24) < 1) {
+        currentVol.volume += Number(trade.volume);
+      } else {
+        volData.push(currentVol);
+        currentVol = {timestamp: trade.timestamp, volume: Number(trade.volume)};
+      }
+      console.log(currentVol);
+
+      if (i===trades.length-1) {
+        volData.push(currentVol);
+      }
+
+      console.log('Include: ' + JSON.stringify(trade));
+      maxVal = Number(trade.unit_price) > maxVal ? Number(trade.unit_price) : maxVal;
+
     }
-    if (data.length > 0) {
-      const lastTrade = data[data.length-1];
+
+    if (trades.length > 0) {
+      const lastTrade = trades[trades.length-1];
       data.push({timestamp: new Date(),
         unit_price: lastTrade.unit_price});
+      maxVal = Number(lastTrade.unit_price) > maxVal ? Number(lastTrade.unit_price) : maxVal;
     }
+
     console.log("Data: "  + JSON.stringify(data));
     console.log(volData);
 
-
     if (trades.length > 0) {
-      // console.log('Data:');
-      // console.log(data);
 
       const domainMaxPrice = maxVal*1.25;
 
       // Scale volumes
-      const maxVol = volData.sort((a,b)=>b.volume-a.volume)[0].volume;
+      let maxVol = 0.0;
+      if (volData.length > 0) {
+        maxVol = volData.sort((a,b)=>b.volume-a.volume)[0].volume;
+      }
 
       //let dataVolScaled = volData.map(x => {timestamp: x.timestamp, volume: x.volume*(0.5*domainMaxPrce/maxVol)});
       volData.forEach((value, index) => {volData[index].volume *=  0.33*domainMaxPrice/maxVol});
+
+      let axisRange = {
+        y: [0, domainMaxPrice]
+      };
+      if (this.state.daysRange > 0) {
+        axisRange.x = [new Date() - msPerDay*this.state.daysRange, new Date()];
+      }
 
       return (
         <Paper>
@@ -141,6 +149,8 @@ class AthletePriceChart extends React.PureComponent {
               <Button onClick={(e) => this.handleClickRange(7)}>Week</Button>
             </ButtonGroup></div>
 
+            { data.length > 0 ? (
+
           <div
             style={{height: 360, width: '100%', padding: 5, marginTop: -10}}
             ref={(c) => this.container = c}
@@ -150,7 +160,7 @@ class AthletePriceChart extends React.PureComponent {
               height={300}
               width={this.state.width}
               domainPadding={{x: 15}}
-              domain={{y: [0, domainMaxPrice]}}
+              domain  ={axisRange}
             >
 
               <VictoryAxis
@@ -163,6 +173,7 @@ class AthletePriceChart extends React.PureComponent {
                   },
                   tickLabels: {fontSize: 15},
                 }}
+
               />
               <VictoryAxis dependentAxis
                 tickCount={4}
@@ -215,12 +226,15 @@ class AthletePriceChart extends React.PureComponent {
     gutter={20}
     style={{ border: { stroke: "black" }, title: {fontSize: 20 } }}
     data={[
-      { name: "Price", symbol: { fill: primary } },
+      { name: "Spot price", symbol: { fill: primary } },
       { name: "Volume", symbol: { fill: secondary } },
     ]}
   />
             </VictoryChart>
-          </div></Paper>
+          </div>
+            ): 
+            "No price data found for time range"
+  }</Paper>
       );
     } else {
       return <Paper style={{height: 250, width: '100%'}}

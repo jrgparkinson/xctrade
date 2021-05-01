@@ -332,18 +332,10 @@ def shares_list(request):
 def trades_list(request):
     """ Get trades for an athlete """
     if request.method == "GET":
-        data = Trade.objects.all().order_by("timestamp")
-
-        # Serializer = TradeSerializer
+        data = Trade.objects.all().filter(future=None).order_by("timestamp")
 
         if "athlete_id" in request.query_params:
             data = data.filter(athlete__id=request.query_params["athlete_id"])
-
-        # if "entity_id" in request.query_params:
-        #     data = data.filter(
-        #         Q(buyer__id=request.query_params["entity_id"])
-        #         | Q(seller__id=request.query_params["entity_id"])
-        #     )
 
         serializer = TradeSimpleSerializer(
             data, context={"request": request}, many=True
